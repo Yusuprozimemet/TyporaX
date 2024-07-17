@@ -14,10 +14,6 @@ Creating a web application similar to Typora, which is a markdown editor with a 
      - **Settings:** Options to customize editor behavior (e.g., theme, font size).
    - **Footer:** Optional; could include additional links or information.
 
-2. **Technologies:**
-   - **Frontend Framework:** Use a framework like React, Vue.js, or Angular for building dynamic interfaces.
-   - **Styling:** CSS (possibly with pre-processors like Sass or Less) for styling components.
-   - **Markdown Rendering:** Use a library like `marked.js` or `markdown-it` for converting markdown to HTML for live preview.
 
 ### Backend Structure (Optional, Depending on Features)
 
