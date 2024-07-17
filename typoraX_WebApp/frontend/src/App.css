@@ -1,0 +1,49 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header, footer {
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+}
+
+aside {
+  background: #f4f4f4;
+  padding: 20px;
+  width: 200px;
+}
+
+.editor-preview {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 20px;
+}
+
+textarea {
+  flex: 1;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.live-preview {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 20px;
+}
+
