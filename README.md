@@ -1,41 +1,5 @@
 # TyporaX
 
-typoraX_WebApp/
-│
-├── frontend/
-│   ├── public/
-│   │   ├── index.html
-│   │   ├── favicon.ico
-│   │   └── ... (other static assets)
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Header.js
-│   │   │   ├── Sidebar.js
-│   │   │   ├── MarkdownEditor.js
-│   │   │   ├── LivePreview.js
-│   │   │   ├── FileManager.js
-│   │   │   ├── Settings.js
-│   │   │   └── Footer.js
-│   │   ├── App.js
-│   │   ├── index.js
-│   │   ├── App.css
-│   │   ├── index.css
-│   │   └── ...
-│   ├── package.json
-│   ├── package-lock.json (or yarn.lock if using Yarn)
-│   └── README.md
-│
-├── backend/
-│   ├── app.py (or main.py, entry point for backend)
-│   ├── requirements.txt
-│   ├── README.md
-│   └── ...
-│
-└── README.md
-
-
-
-
 Creating a web application similar to Typora, which is a markdown editor with a live preview, involves several components. Here's a basic structure and components you might consider:
 
 ### Frontend Structure
