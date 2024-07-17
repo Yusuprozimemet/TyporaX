@@ -5,58 +5,218 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .menu-bar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+        }
+
+        .menu-bar div {
+            cursor: pointer;
+            padding: 0 10px;
+        }
+
+        .menu-bar div:hover {
+            background-color: #444;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            flex-grow: 1;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #f4f4f4;
+            padding: 10px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 1.2em;
+            margin-top: 0;
+        }
+
+        .sidebar .tabs {
+            display: flex;
+            cursor: pointer;
+        }
+
+        .sidebar .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background-color: #ddd;
+            margin-right: 5px;
+        }
+
+        .sidebar .tab.active {
+            background-color: #bbb;
+        }
+
+        .sidebar .content {
+            display: none;
+        }
+
+        .sidebar .content.active {
+            display: block;
+        }
+
+        .editor {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        textarea#markdown-editor {
+            flex-grow: 1;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-family: monospace;
+            font-size: 1em;
+            line-height: 1.5;
+            resize: none;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Markdown Editor</h1>
-            <!-- You can add navigation and user controls here -->
-        </div>
-    </header>
-
-    <main>
-        <div class="container">
-            <div class="sidebar">
-                <h2>File Explorer</h2>
-                <!-- Sidebar content: file management options -->
-                <ul>
-                    <li><a href="#">Document 1</a></li>
-                    <li><a href="#">Document 2</a></li>
-                    <!-- Add dynamic list based on user's files -->
-                </ul>
-                <h2>Settings</h2>
-                <!-- Sidebar content: editor settings options -->
-                <ul>
-                    <li><a href="#">Theme</a></li>
-                    <li><a href="#">Font Size</a></li>
-                    <!-- Add more settings options as needed -->
-                </ul>
+    <div class="menu-bar">
+        <div id="menu-file">File</div>
+        <div id="menu-edit">Edit</div>
+        <div id="menu-paragraph">Paragraph</div>
+        <div id="menu-format">Format</div>
+        <div id="menu-view">View</div>
+        <div id="menu-themes">Themes</div>
+        <div id="menu-help">Help</div>
+    </div>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="tabs">
+                <div id="tab-files" class="tab active">Files</div>
+                <div id="tab-search" class="tab">Search</div>
             </div>
-            <div class="editor">
-                <textarea id="markdown-text" placeholder="Write your markdown here..."></textarea>
-                <div id="preview-pane">
-                    <!-- Rendered HTML preview will appear here -->
-                </div>
+            <div id="content-files" class="content active">
+                <h2>Files</h2>
+                <div id="file-list"></div>
             </div>
-        </div>
-    </main>
-
-    <footer>
-        <div class="container">
-            <!-- Optional footer content -->
-        </div>
-    </footer>
-
-    <!-- Optional: Load JavaScript for live preview or additional functionalities -->
+            <div id="content-search" class="content">
+                <h2>Search</h2>
+                <input type="text" id="search-input" placeholder="Search files...">
+                <div id="search-results"></div>
+            </div>
+        </aside>
+        <main class="editor">
+            <textarea id="markdown-editor" placeholder="Start writing your markdown..."></textarea>
+        </main>
+    </div>
     <script>
-        // JavaScript code for live preview (example)
-        const textarea = document.getElementById('markdown-text');
-        const previewPane = document.getElementById('preview-pane');
-        
-        textarea.addEventListener('input', function() {
-            previewPane.innerHTML = marked(textarea.value);
+        document.addEventListener("DOMContentLoaded", function() {
+            const editor = document.getElementById("markdown-editor");
+
+            // Handle tab switching
+            document.getElementById('tab-files').addEventListener('click', function() {
+                showContent('files');
+                loadFiles();
+            });
+
+            document.getElementById('tab-search').addEventListener('click', function() {
+                showContent('search');
+            });
+
+            function showContent(type) {
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+
+                document.getElementById('tab-' + type).classList.add('active');
+                document.getElementById('content-' + type).classList.add('active');
+            }
+
+            function loadFiles() {
+                fetch('/artifacts')
+                    .then(response => response.json())
+                    .then(files => {
+                        const fileExplorer = document.getElementById('file-list');
+                        fileExplorer.innerHTML = files.map(file => `<div class="file-item" data-filename="${file}">${file}</div>`).join('');
+                        document.querySelectorAll('.file-item').forEach(item => {
+                            item.addEventListener('click', function() {
+                                openFile(this.dataset.filename);
+                            });
+                        });
+                    });
+            }
+
+            document.getElementById('search-input').addEventListener('input', function() {
+                const keyword = this.value;
+                fetch('/search?q=' + keyword)
+                    .then(response => response.json())
+                    .then(results => {
+                        const searchContent = document.getElementById('search-results');
+                        searchContent.innerHTML = results.map(result => `<div>${result}</div>`).join('');
+                    });
+            });
+
+            editor.addEventListener("input", function() {
+                // Perform any real-time processing if needed.
+            });
+
+            // Menu actions
+            document.getElementById('menu-file').addEventListener('click', function() {
+                const action = prompt('Choose action: New, Open, Save');
+                if (action.toLowerCase() === 'new') {
+                    editor.value = '';
+                } else if (action.toLowerCase() === 'open') {
+                    const filename = prompt('Enter filename to open:');
+                    openFile(filename);
+                } else if (action.toLowerCase() === 'save') {
+                    const filename = prompt('Enter filename to save as:');
+                    saveFile(filename, editor.value);
+                }
+            });
+
+            function openFile(filename) {
+                fetch('/open?filename=' + filename)
+                    .then(response => response.text())
+                    .then(content => {
+                        editor.value = content;
+                    });
+            }
+
+            function saveFile(filename, content) {
+                fetch('/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filename, content }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('File saved successfully');
+                    } else {
+                        alert('Error saving file: ' + data.error);
+                    }
+                });
+            }
         });
     </script>
 </body>
 </html>
-

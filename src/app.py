@@ -1,6 +1,7 @@
 import os
 import json
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
+from utils import list_md_files, open_md_file, save_file, search_files
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
@@ -19,7 +20,6 @@ def save_user(email, username, password):
     users.append(user_data)
     with open(USERS_FILE, 'w') as f:
         json.dump(users, f, indent=4)
-
 
 # Function to load registered users from JSON file
 def load_users():
@@ -73,6 +73,47 @@ def login():
 @app.route('/editor')
 def editor():
     return render_template('editor.html')
+
+# Route to list markdown files
+@app.route('/files')
+def get_files():
+    files = list_md_files()
+    return jsonify(files)
+
+# Route to search within markdown files
+@app.route('/search')
+def search():
+    keyword = request.args.get('q', '')
+    results = search_files(keyword)
+    return jsonify(results)
+
+# Route to save a markdown file
+@app.route('/save', methods=['POST'])
+def save():
+    data = request.get_json()
+    filename = data.get('filename')
+    content = data.get('content')
+    try:
+        save_file(filename, content)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# Route to open a markdown file
+@app.route('/open')
+def open_file_route():
+    filename = request.args.get('filename')
+    try:
+        content = open_md_file(filename)
+        return content
+    except Exception as e:
+        return str(e), 500
+
+# Route to list files in the 'artifacts' folder
+@app.route('/artifacts')
+def list_artifacts():
+    files = os.listdir(os.path.join(os.path.dirname(__file__), 'artifacts'))
+    return jsonify(files)
 
 if __name__ == '__main__':
     app.run(debug=True)
