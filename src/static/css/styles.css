@@ -3,25 +3,92 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
+    flex-direction: column;
     height: 100vh;
+    background: #f0f2f5;
+}
+
+.menu-bar {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.9em;
+}
+
+.menu-bar div {
+    cursor: pointer;
+    padding: 0 10px;
+    transition: background-color 0.3s;
+}
+
+.menu-bar div:hover {
+    background-color: #444;
 }
 
 .container {
     display: flex;
     width: 100%;
+    height: calc(100% - 40px); /* Adjust based on menu-bar height */
+    flex-grow: 1;
 }
 
 .sidebar {
     width: 250px;
-    background-color: #f4f4f4;
+    background-color: #fff;
     padding: 10px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     overflow-y: auto;
+    border-right: 1px solid #ccc;
 }
 
 .sidebar h2 {
     font-size: 1.2em;
     margin-top: 0;
+    text-align: center;
+}
+
+.sidebar .tabs {
+    display: flex;
+    cursor: pointer;
+}
+
+.sidebar .tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    background-color: #ddd;
+    margin-right: 5px;
+    border-radius: 4px 4px 0 0;
+    transition: background-color 0.3s;
+}
+
+.sidebar .tab:last-child {
+    margin-right: 0;
+}
+
+.sidebar .tab.active {
+    background-color: #bbb;
+}
+
+.sidebar .content {
+    display: none;
+}
+
+.sidebar .content.active {
+    display: block;
+}
+
+.file-item, .search-results-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+}
+
+.file-item:hover, .search-results-item:hover {
+    background-color: #f0f0f0;
 }
 
 .editor {
@@ -29,6 +96,9 @@ body {
     display: flex;
     flex-direction: column;
     padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-left: 1px solid #ccc;
 }
 
 textarea#markdown-editor {
@@ -40,9 +110,18 @@ textarea#markdown-editor {
     font-size: 1em;
     line-height: 1.5;
     resize: none;
+    border-radius: 4px;
+    transition: border-color 0.3s;
 }
 
+textarea#markdown-editor:focus {
+    border-color: #007bff;
+}
 
-.hidden {
-    display: none;
+#search-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }

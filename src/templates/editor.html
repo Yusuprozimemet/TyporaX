@@ -4,136 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background: #f0f2f5;
-        }
-
-        .menu-bar {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            display: flex;
-            justify-content: space-around;
-            font-size: 0.9em;
-        }
-
-        .menu-bar div {
-            cursor: pointer;
-            padding: 0 10px;
-            transition: background-color 0.3s;
-        }
-
-        .menu-bar div:hover {
-            background-color: #444;
-        }
-
-        .container {
-            display: flex;
-            width: 100%;
-            height: calc(100% - 40px); /* Adjust based on menu-bar height */
-            flex-grow: 1;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #fff;
-            padding: 10px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            border-right: 1px solid #ccc;
-        }
-
-        .sidebar h2 {
-            font-size: 1.2em;
-            margin-top: 0;
-            text-align: center;
-        }
-
-        .sidebar .tabs {
-            display: flex;
-            cursor: pointer;
-        }
-
-        .sidebar .tab {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            background-color: #ddd;
-            margin-right: 5px;
-            border-radius: 4px 4px 0 0;
-            transition: background-color 0.3s;
-        }
-
-        .sidebar .tab:last-child {
-            margin-right: 0;
-        }
-
-        .sidebar .tab.active {
-            background-color: #bbb;
-        }
-
-        .sidebar .content {
-            display: none;
-        }
-
-        .sidebar .content.active {
-            display: block;
-        }
-
-        .file-item, .search-results-item {
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.3s;
-        }
-
-        .file-item:hover, .search-results-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        .editor {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-left: 1px solid #ccc;
-        }
-
-        textarea#markdown-editor {
-            flex-grow: 1;
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            font-family: monospace;
-            font-size: 1em;
-            line-height: 1.5;
-            resize: none;
-            border-radius: 4px;
-            transition: border-color 0.3s;
-        }
-
-        textarea#markdown-editor:focus {
-            border-color: #007bff;
-        }
-
-        #search-input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="menu-bar">
@@ -172,7 +43,6 @@
             const editor = document.getElementById("markdown-editor");
             const imageUploadInput = document.getElementById("image-upload");
 
-            // Handle tab switching
             document.getElementById('tab-files').addEventListener('click', function() {
                 showContent('files');
                 loadFiles();
@@ -220,13 +90,11 @@
             });
 
             editor.addEventListener("input", function() {
-                // Perform any real-time processing if needed.
+                renderPreview();
             });
 
-            // Load files initially
             loadFiles();
 
-            // Menu actions
             document.getElementById('menu-file').addEventListener('click', function() {
                 const action = prompt('Choose action: New, Open, Save');
                 if (action && action.trim().toLowerCase() === 'new') {
@@ -260,6 +128,7 @@
                             const imageUrl = data.url;
                             const markdownImage = `![alt text](${imageUrl})`;
                             editor.value += markdownImage;
+                            renderPreview();
                         } else {
                             alert('Error uploading image: ' + data.error);
                         }
@@ -272,6 +141,7 @@
                     .then(response => response.text())
                     .then(content => {
                         editor.value = content;
+                        renderPreview();
                     });
             }
 
@@ -279,18 +149,25 @@
                 fetch('/save', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ filename, content }),
+                    body: JSON.stringify({ filename: filename, content: content })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         alert('File saved successfully');
+                        loadFiles();
                     } else {
                         alert('Error saving file: ' + data.error);
                     }
                 });
+            }
+
+            function renderPreview() {
+                // This function can be extended to render the markdown preview
+                // For simplicity, we just update the text area content here
+                editor.innerHTML = marked.parse(editor.value);
             }
         });
     </script>
