@@ -1,36 +1,18 @@
 import os
 import json
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
-from utils import list_md_files, open_md_file, save_file, search_files
+from werkzeug.utils import secure_filename
+from utils import list_md_files, open_md_file, save_file, search_files, save_user, load_users
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'img')
 
-# Path to store registered users (replace with database in real applications)
-USERS_FILE = os.path.join(os.path.dirname(__file__), 'artifacts', 'users.json')
+# Create the upload folder if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-# Create 'artifacts' folder if it doesn't exist
-if not os.path.exists(os.path.join(os.path.dirname(__file__), 'artifacts')):
-    os.makedirs(os.path.join(os.path.dirname(__file__), 'artifacts'))
-
-# Function to save user data to JSON file
-def save_user(email, username, password):
-    user_data = {'email': email, 'username': username, 'password': password}
-    users = load_users()
-    users.append(user_data)
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users, f, indent=4)
-
-# Function to load registered users from JSON file
-def load_users():
-    users = []
-    try:
-        if os.path.exists(USERS_FILE):
-            with open(USERS_FILE, 'r') as f:
-                users = json.load(f)
-    except Exception as e:
-        print(f"Error loading users: {e}")
-    return users
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Route for the home page (index.html)
 @app.route('/')
@@ -74,9 +56,9 @@ def login():
 def editor():
     return render_template('editor.html')
 
-# Route to list markdown files
+# Route to list markdown files and their content
 @app.route('/files')
-def get_files():
+def list_files():
     files = list_md_files()
     return jsonify(files)
 
@@ -93,6 +75,8 @@ def save():
     data = request.get_json()
     filename = data.get('filename')
     content = data.get('content')
+    if not filename.endswith('.md'):
+        filename += '.md'
     try:
         save_file(filename, content)
         return jsonify({'success': True})
@@ -101,7 +85,7 @@ def save():
 
 # Route to open a markdown file
 @app.route('/open')
-def open_file_route():
+def open_file():
     filename = request.args.get('filename')
     try:
         content = open_md_file(filename)
@@ -109,11 +93,20 @@ def open_file_route():
     except Exception as e:
         return str(e), 500
 
-# Route to list files in the 'artifacts' folder
-@app.route('/artifacts')
-def list_artifacts():
-    files = os.listdir(os.path.join(os.path.dirname(__file__), 'artifacts'))
-    return jsonify(files)
+# Route to handle image uploads
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    if 'image' not in request.files:
+        return jsonify({'success': False, 'error': 'No file part'})
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'success': False, 'error': 'No selected file'})
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        image_url = url_for('static', filename='img/' + filename)
+        return jsonify({'success': True, 'url': image_url})
+    return jsonify({'success': False, 'error': 'Unknown error'})
 
 if __name__ == '__main__':
     app.run(debug=True)

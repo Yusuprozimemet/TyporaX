@@ -13,6 +13,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            background: #f0f2f5;
         }
 
         .menu-bar {
@@ -20,13 +21,14 @@
             color: white;
             padding: 10px;
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             font-size: 0.9em;
         }
 
         .menu-bar div {
             cursor: pointer;
             padding: 0 10px;
+            transition: background-color 0.3s;
         }
 
         .menu-bar div:hover {
@@ -36,21 +38,23 @@
         .container {
             display: flex;
             width: 100%;
-            height: 100%;
+            height: calc(100% - 40px); /* Adjust based on menu-bar height */
             flex-grow: 1;
         }
 
         .sidebar {
             width: 250px;
-            background-color: #f4f4f4;
+            background-color: #fff;
             padding: 10px;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             overflow-y: auto;
+            border-right: 1px solid #ccc;
         }
 
         .sidebar h2 {
             font-size: 1.2em;
             margin-top: 0;
+            text-align: center;
         }
 
         .sidebar .tabs {
@@ -64,6 +68,12 @@
             text-align: center;
             background-color: #ddd;
             margin-right: 5px;
+            border-radius: 4px 4px 0 0;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar .tab:last-child {
+            margin-right: 0;
         }
 
         .sidebar .tab.active {
@@ -78,11 +88,25 @@
             display: block;
         }
 
+        .file-item, .search-results-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+
+        .file-item:hover, .search-results-item:hover {
+            background-color: #f0f0f0;
+        }
+
         .editor {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 1px solid #ccc;
         }
 
         textarea#markdown-editor {
@@ -94,6 +118,20 @@
             font-size: 1em;
             line-height: 1.5;
             resize: none;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        textarea#markdown-editor:focus {
+            border-color: #007bff;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -106,6 +144,7 @@
         <div id="menu-view">View</div>
         <div id="menu-themes">Themes</div>
         <div id="menu-help">Help</div>
+        <div id="menu-insert-image">Insert Image</div>
     </div>
     <div class="container">
         <aside class="sidebar">
@@ -125,11 +164,13 @@
         </aside>
         <main class="editor">
             <textarea id="markdown-editor" placeholder="Start writing your markdown..."></textarea>
+            <input type="file" id="image-upload" accept="image/*" style="display: none;">
         </main>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const editor = document.getElementById("markdown-editor");
+            const imageUploadInput = document.getElementById("image-upload");
 
             // Handle tab switching
             document.getElementById('tab-files').addEventListener('click', function() {
@@ -150,7 +191,7 @@
             }
 
             function loadFiles() {
-                fetch('/artifacts')
+                fetch('/files')
                     .then(response => response.json())
                     .then(files => {
                         const fileExplorer = document.getElementById('file-list');
@@ -169,7 +210,12 @@
                     .then(response => response.json())
                     .then(results => {
                         const searchContent = document.getElementById('search-results');
-                        searchContent.innerHTML = results.map(result => `<div>${result}</div>`).join('');
+                        searchContent.innerHTML = results.map(result => `<div class="search-results-item">${result}</div>`).join('');
+                        document.querySelectorAll('.search-results-item').forEach(item => {
+                            item.addEventListener('click', function() {
+                                openFile(this.innerText);
+                            });
+                        });
                     });
             });
 
@@ -177,17 +223,47 @@
                 // Perform any real-time processing if needed.
             });
 
+            // Load files initially
+            loadFiles();
+
             // Menu actions
             document.getElementById('menu-file').addEventListener('click', function() {
                 const action = prompt('Choose action: New, Open, Save');
-                if (action.toLowerCase() === 'new') {
+                if (action && action.trim().toLowerCase() === 'new') {
                     editor.value = '';
-                } else if (action.toLowerCase() === 'open') {
+                } else if (action && action.trim().toLowerCase() === 'open') {
                     const filename = prompt('Enter filename to open:');
                     openFile(filename);
-                } else if (action.toLowerCase() === 'save') {
+                } else if (action && action.trim().toLowerCase() === 'save') {
                     const filename = prompt('Enter filename to save as:');
                     saveFile(filename, editor.value);
+                }
+            });
+
+            document.getElementById('menu-insert-image').addEventListener('click', function() {
+                imageUploadInput.click();
+            });
+
+            imageUploadInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('image', file);
+
+                    fetch('/upload_image', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const imageUrl = data.url;
+                            const markdownImage = `![alt text](${imageUrl})`;
+                            editor.value += markdownImage;
+                        } else {
+                            alert('Error uploading image: ' + data.error);
+                        }
+                    });
                 }
             });
 
