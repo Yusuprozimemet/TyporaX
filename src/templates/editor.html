@@ -232,7 +232,6 @@
                 }
             }
 
-
             function clearFormatting() {
                 const start = editor.selectionStart;
                 const end = editor.selectionEnd;
@@ -246,13 +245,12 @@
 
             function setTheme(theme) {
                 if (theme === 'night') {
-                    document.body.style.backgroundColor = '#333';
-                    document.body.style.color = '#eee';
+                    document.body.classList.add('theme-night');
                 } else {
-                    document.body.style.backgroundColor = '#fff';
-                    document.body.style.color = '#000';
+                    document.body.classList.remove('theme-night');
                 }
             }
+
 
             document.getElementById('menu-file').addEventListener('click', function () {
                 const action = prompt('Choose action: New, Save, Save as, Rename, Delete, Settings');

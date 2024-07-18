@@ -1,3 +1,4 @@
+/* Default light theme */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -5,7 +6,9 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: #f0f2f5;
+    background-color: #f0f2f5;
+    color: #000;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .menu-bar {
@@ -170,4 +173,68 @@ textarea#markdown-editor:focus {
 
 .submenu div:hover {
     background-color: #444;
+}
+
+/* Dark theme styles */
+.theme-night body {
+    background-color: #333;
+    color: #eee;
+}
+
+.theme-night .menu-bar {
+    background-color: #444;
+    border-bottom: 1px solid #777;
+}
+
+.theme-night .menu-bar > div {
+    color: #ddd;
+}
+
+.theme-night .menu-bar > div:hover {
+    background-color: #555;
+}
+
+.theme-night .sidebar {
+    background-color: #222;
+    border-right: 1px solid #444;
+}
+
+.theme-night .file-item, .theme-night .search-results-item {
+    border-bottom: 1px solid #555;
+}
+
+.theme-night .file-item:hover, .theme-night .search-results-item:hover {
+    background-color: #444;
+}
+
+.theme-night .editor, .theme-night #markdown-preview {
+    background-color: #1e1e1e;
+    border-left: 1px solid #444;
+}
+
+.theme-night textarea#markdown-editor {
+    border: 1px solid #555;
+    background-color: #333;
+    color: #eee;
+}
+
+.theme-night #markdown-preview {
+    background-color: #2a2a2a;
+    color: #ddd;
+}
+
+.theme-night #search-input {
+    border: 1px solid #555;
+    background-color: #333;
+    color: #eee;
+}
+
+.theme-night .submenu {
+    background-color: #444;
+    color: #ddd;
+    border: 1px solid #777;
+}
+
+.theme-night .submenu div:hover {
+    background-color: #555;
 }
