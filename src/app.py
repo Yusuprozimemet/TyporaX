@@ -7,6 +7,7 @@ from utils import list_md_files, open_md_file, save_file, search_files, save_use
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'img')
+ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), 'artifacts')
 
 # Create the upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
@@ -107,6 +108,19 @@ def upload_image():
         image_url = url_for('static', filename='img/' + filename)
         return jsonify({'success': True, 'url': image_url})
     return jsonify({'success': False, 'error': 'Unknown error'})
+
+@app.route('/rename', methods=['POST'])
+def rename_file():
+    data = request.get_json()
+    current_filename = data.get('currentFilename')
+    new_filename = data.get('newFilename')
+
+    try:
+        os.rename(os.path.join(ARTIFACTS_DIR, current_filename), os.path.join(ARTIFACTS_DIR, new_filename))
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

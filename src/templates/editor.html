@@ -6,20 +6,79 @@
     <title>Markdown Editor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
-        /* Additional custom styles */
-        .current-file-info {
-            margin-bottom: 10px;
-            font-weight: bold;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        /* Body styles */
+        body {
+            background-color: #f0f0f0; /* Light gray background */
+            color: #333; /* Dark gray text color */
+            font-family: Arial, sans-serif;
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove default padding */
         }
 
-        .current-file-info span {
-            font-weight: normal;
+        /* Menu bar styles */
+        .menu-bar {
+            display: flex;
+            background-color: #333; /* Dark background for the menu bar */
+            padding: 10px;
+            border-bottom: 1px solid #666; /* Darker border */
         }
-    </style>
+
+        .menu-bar > div {
+            position: relative;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-right: 1px solid #666; /* Darker border between menu items */
+            color: #ccc; /* Light gray text color */
+        }
+
+        .menu-bar > div:hover {
+            background-color: #444;
+        }
+
+        .menu-bar > div:last-child {
+            border-right: none; /* Remove border on the last menu item */
+        }
+
+        /* File item styles */
+        .file-item.selected {
+            background-color: #007bff; /* Blue background for selected file */
+            color: #fff; /* White text color for selected file */
+            font-weight: bold;
+            border-left: 4px solid #0056b3; /* Darker blue left border */
+        }
+
+        .file-item {
+            padding: 8px 12px; /* Increased padding for better clickability */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-bottom: 1px solid #ccc; /* Light border between file items */
+            color: #333; /* Dark gray text color */
+        }
+
+        .file-item:hover {
+            background-color: #e0e0e0; /* Light gray background on hover */
+        }
+
+        /* Submenu styles */
+        .submenu {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            color: #ccc;
+            border: 1px solid #666;
+            z-index: 1;
+        }
+
+        .submenu div {
+            padding: 8px 12px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .submenu div:hover {
+            background-color: #444;
+        }
+    </style>    
 </head>
 <body>
     <div class="menu-bar">
@@ -27,10 +86,33 @@
         <div id="menu-edit">Edit</div>
         <div id="menu-paragraph">Paragraph</div>
         <div id="menu-format">Format</div>
-        <div id="menu-view">View</div>
         <div id="menu-themes">Themes</div>
         <div id="menu-help">Help</div>
         <div id="menu-insert-image">Insert Image</div>
+    </div>
+    <div id="submenu-paragraph" class="submenu">
+        <div data-action="heading1">Heading 1</div>
+        <div data-action="heading2">Heading 2</div>
+        <div data-action="heading3">Heading 3</div>
+        <div data-action="heading4">Heading 4</div>
+        <div data-action="heading5">Heading 5</div>
+        <div data-action="heading6">Heading 6</div>
+        <div data-action="image-small">Image Small</div>
+        <div data-action="image-medium">Image Medium</div>
+        <div data-action="image-large">Image Large</div>
+    </div>
+    <div id="submenu-format" class="submenu">
+        <div data-action="strong">Strong</div>
+        <div data-action="emphasis">Emphasis</div>
+        <div data-action="underline">Underline</div>
+        <div data-action="code">Code</div>
+        <div data-action="hyperlink">Hyperlink</div>
+        <div data-action="comment">Comment</div>
+        <div data-action="clear-format">Clear Format</div>
+    </div>
+    <div id="submenu-themes" class="submenu">
+        <div data-action="night">Night Mode</div>
+        <div data-action="day">Day Mode</div>
     </div>
     <div class="container">
         <aside class="sidebar">
@@ -49,15 +131,181 @@
             </div>
         </aside>
         <main class="editor">
-            <div class="current-file-info" id="current-file-info">Editing: <span id="current-filename">.md</span></div>
             <textarea id="markdown-editor" placeholder="Start writing your markdown..."></textarea>
             <input type="file" id="image-upload" accept="image/*" style="display: none;">
+            <input type="hidden" id="current-filename"> <!-- Hidden input to hold current filename -->
         </main>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const editor = document.getElementById("markdown-editor");
             const imageUploadInput = document.getElementById("image-upload");
+            const currentFilenameInput = document.getElementById("current-filename");
+
+            const submenuParagraph = document.getElementById('submenu-paragraph');
+            const submenuFormat = document.getElementById('submenu-format');
+            const submenuThemes = document.getElementById('submenu-themes');
+
+            document.getElementById('menu-paragraph').addEventListener('click', function(event) {
+                toggleSubmenu(submenuParagraph, event.target);
+            });
+
+            document.getElementById('menu-format').addEventListener('click', function(event) {
+                toggleSubmenu(submenuFormat, event.target);
+            });
+
+            document.getElementById('menu-themes').addEventListener('click', function(event) {
+                toggleSubmenu(submenuThemes, event.target);
+            });
+
+            function toggleSubmenu(submenu, target) {
+                submenuParagraph.style.display = 'none';
+                submenuFormat.style.display = 'none';
+                submenuThemes.style.display = 'none';
+                if (submenu.style.display === 'block') {
+                    submenu.style.display = 'none';
+                } else {
+                    submenu.style.display = 'block';
+                    const rect = target.getBoundingClientRect();
+                    submenu.style.top = `${rect.bottom}px`;
+                    submenu.style.left = `${rect.left}px`;
+                }
+            }
+
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.menu-bar') && !event.target.closest('.submenu')) {
+                    submenuParagraph.style.display = 'none';
+                    submenuFormat.style.display = 'none';
+                    submenuThemes.style.display = 'none';
+                }
+            });
+
+            document.querySelectorAll('.submenu div').forEach(item => {
+                item.addEventListener('click', function() {
+                    const action = this.dataset.action;
+                    handleSubmenuAction(action);
+                    submenuParagraph.style.display = 'none';
+                    submenuFormat.style.display = 'none';
+                    submenuThemes.style.display = 'none';
+                });
+            });
+
+            function handleSubmenuAction(action) {
+                switch(action) {
+                    case 'heading1':
+                        insertText('# ');
+                        break;
+                    case 'heading2':
+                        insertText('## ');
+                        break;
+                    case 'heading3':
+                        insertText('### ');
+                        break;
+                    case 'heading4':
+                        insertText('#### ');
+                        break;
+                    case 'heading5':
+                        insertText('##### ');
+                        break;
+                    case 'heading6':
+                        insertText('###### ');
+                        break;
+                    case 'image-small':
+                        setImageSize('small');
+                        break;
+                    case 'image-medium':
+                        setImageSize('medium');
+                        break;
+                    case 'image-large':
+                        setImageSize('large');
+                        break;
+                    case 'strong':
+                        wrapText('**');
+                        break;
+                    case 'emphasis':
+                        wrapText('*');
+                        break;
+                    case 'underline':
+                        wrapText('<u>', '</u>');
+                        break;
+                    case 'code':
+                        wrapText('`');
+                        break;
+                    case 'hyperlink':
+                        insertText('[link](url)');
+                        break;
+                    case 'comment':
+                        insertText('<!-- comment -->');
+                        break;
+                    case 'clear-format':
+                        clearFormatting();
+                        break;
+                    case 'night':
+                        setTheme('night');
+                        break;
+                    case 'day':
+                        setTheme('day');
+                        break;
+                    default:
+                        alert('Action not implemented.');
+                }
+            }
+
+            function insertText(text) {
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const before = editor.value.substring(0, start);
+                const after = editor.value.substring(end);
+                editor.value = before + text + after;
+                editor.selectionStart = editor.selectionEnd = start + text.length;
+                editor.focus();
+                renderPreview();
+            }
+
+            function wrapText(before, after = before) {
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const selectedText = editor.value.substring(start, end);
+                const beforeText = editor.value.substring(0, start);
+                const afterText = editor.value.substring(end);
+                editor.value = beforeText + before + selectedText + after + afterText;
+                editor.selectionStart = start;
+                editor.selectionEnd = end + before.length + after.length;
+                editor.focus();
+                renderPreview();
+            }
+
+            function setImageSize(size) {
+                let sizeText;
+                switch(size) {
+                    case 'small':
+                        sizeText = '{width=100}';
+                        break;
+                    case 'medium':
+                        sizeText = '{width=300}';
+                        break;
+                    case 'large':
+                        sizeText = '{width=500}';
+                        break;
+                }
+                insertText(sizeText);
+            }
+
+            function clearFormatting() {
+                // Example implementation to clear formatting (can be enhanced)
+                editor.value = editor.value.replace(/[*_`<u>]+/g, '');
+                renderPreview();
+            }
+
+            function setTheme(theme) {
+                if (theme === 'night') {
+                    document.body.style.backgroundColor = '#333';
+                    document.body.style.color = '#ccc';
+                } else {
+                    document.body.style.backgroundColor = '#f0f0f0';
+                    document.body.style.color = '#333';
+                }
+            }
 
             // Function to handle Ctrl+S keypress for instant save
             document.addEventListener("keydown", function(event) {
@@ -77,7 +325,7 @@
 
             function getCurrentFilename() {
                 // Extract current filename from file list if available
-                const currentFile = document.querySelector('.file-item.active');
+                const currentFile = document.querySelector('.file-item.selected');
                 return currentFile ? currentFile.dataset.filename : 'newfile.md';
             }
 
@@ -106,8 +354,13 @@
                         const fileExplorer = document.getElementById('file-list');
                         fileExplorer.innerHTML = files.map(file => `<div class="file-item" data-filename="${file}">${file}</div>`).join('');
                         document.querySelectorAll('.file-item').forEach(item => {
-                            item.addEventListener('click', function() {
-                                openFile(this.dataset.filename);
+                            item.addEventListener('click', function(event) {
+                                if (event.detail === 2) {
+                                    renameFile(this);
+                                } else {
+                                    selectFile(this); // Select the clicked file
+                                    openFile(this.dataset.filename); // Open the clicked file
+                                }
                             });
                         });
                     });
@@ -135,16 +388,13 @@
             loadFiles();
 
             document.getElementById('menu-file').addEventListener('click', function() {
-                const action = prompt('Choose action: New, Open, Save');
-                if (action && action.trim().toLowerCase() === 'new') {
-                    editor.value = '';
-                    updateCurrentFileInfo('newfile.md');
-                } else if (action && action.trim().toLowerCase() === 'open') {
-                    const filename = prompt('Enter filename to open:');
-                    openFile(filename);
-                } else if (action && action.trim().toLowerCase() === 'save') {
-                    saveFilePrompt();
-                }
+                const action = prompt('Choose action: New, Open, Save, Save as, Rename, Settings');
+                handleFileMenuAction(action);
+            });
+
+            document.getElementById('menu-edit').addEventListener('click', function() {
+                const action = prompt('Choose action: Check Grammarly');
+                handleEditMenuAction(action);
             });
 
             document.getElementById('menu-insert-image').addEventListener('click', function() {
@@ -205,13 +455,92 @@
             }
 
             function updateCurrentFileInfo(filename) {
-                document.getElementById('current-filename').textContent = filename;
+                currentFilenameInput.value = filename; // Update hidden input
             }
 
             function renderPreview() {
                 // This function can be extended to render the markdown preview
                 // For simplicity, we just update the text area content here
                 editor.innerHTML = marked.parse(editor.value);
+            }
+
+            function renameFile(item) {
+                const currentFilename = item.dataset.filename;
+                const newFilename = prompt('Enter new filename:', currentFilename);
+
+                if (newFilename && newFilename.trim() !== '' && newFilename !== currentFilename) {
+                    fetch('/rename', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ currentFilename: currentFilename, newFilename: newFilename })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            item.dataset.filename = newFilename;
+                            item.textContent = newFilename;
+                            if (currentFilename === currentFilenameInput.value) {
+                                updateCurrentFileInfo(newFilename);
+                            }
+                            alert('File renamed successfully');
+                        } else {
+                            alert('Error renaming file: ' + data.error);
+                        }
+                    });
+                }
+            }
+
+            function selectFile(item) {
+                document.querySelectorAll('.file-item').forEach(fileItem => {
+                    fileItem.classList.remove('selected');
+                });
+                item.classList.add('selected');
+            }
+
+            function handleFileMenuAction(action) {
+                switch (action.trim().toLowerCase()) {
+                    case 'new':
+                        editor.value = '';
+                        updateCurrentFileInfo('newfile.md');
+                        break;
+                    case 'open':
+                        const filename = prompt('Enter filename to open:');
+                        if (filename) {
+                            openFile(filename);
+                        }
+                        break;
+                    case 'save':
+                        saveFilePrompt();
+                        break;
+                    case 'save as':
+                        saveFilePrompt();
+                        break;
+                    case 'rename':
+                        const currentFile = document.querySelector('.file-item.selected');
+                        if (currentFile) {
+                            renameFile(currentFile);
+                        } else {
+                            alert('Please select a file to rename.');
+                        }
+                        break;
+                    case 'settings':
+                        alert('Settings menu will be implemented later.');
+                        break;
+                    default:
+                        alert('Invalid action.');
+                }
+            }
+
+            function handleEditMenuAction(action) {
+                switch (action.trim().toLowerCase()) {
+                    case 'check grammarly':
+                        alert('Grammarly check will be implemented later.');
+                        break;
+                    default:
+                        alert('Invalid action.');
+                }
             }
         });
     </script>
