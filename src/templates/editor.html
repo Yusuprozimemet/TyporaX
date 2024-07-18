@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* Additional custom styles */
+        .current-file-info {
+            margin-bottom: 10px;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .current-file-info span {
+            font-weight: normal;
+        }
+    </style>
 </head>
 <body>
     <div class="menu-bar">
@@ -34,6 +49,7 @@
             </div>
         </aside>
         <main class="editor">
+            <div class="current-file-info" id="current-file-info">Editing: <span id="current-filename">.md</span></div>
             <textarea id="markdown-editor" placeholder="Start writing your markdown..."></textarea>
             <input type="file" id="image-upload" accept="image/*" style="display: none;">
         </main>
@@ -43,6 +59,29 @@
             const editor = document.getElementById("markdown-editor");
             const imageUploadInput = document.getElementById("image-upload");
 
+            // Function to handle Ctrl+S keypress for instant save
+            document.addEventListener("keydown", function(event) {
+                if (event.ctrlKey && event.key === "s") {
+                    event.preventDefault();
+                    saveFilePrompt();
+                }
+            });
+
+            function saveFilePrompt() {
+                const filename = prompt("Enter filename to save as:", getCurrentFilename());
+                if (filename) {
+                    saveFile(filename, editor.value);
+                    updateCurrentFileInfo(filename); // Update current file info
+                }
+            }
+
+            function getCurrentFilename() {
+                // Extract current filename from file list if available
+                const currentFile = document.querySelector('.file-item.active');
+                return currentFile ? currentFile.dataset.filename : 'newfile.md';
+            }
+
+            // Rest of your existing JavaScript functionality
             document.getElementById('tab-files').addEventListener('click', function() {
                 showContent('files');
                 loadFiles();
@@ -99,12 +138,12 @@
                 const action = prompt('Choose action: New, Open, Save');
                 if (action && action.trim().toLowerCase() === 'new') {
                     editor.value = '';
+                    updateCurrentFileInfo('newfile.md');
                 } else if (action && action.trim().toLowerCase() === 'open') {
                     const filename = prompt('Enter filename to open:');
                     openFile(filename);
                 } else if (action && action.trim().toLowerCase() === 'save') {
-                    const filename = prompt('Enter filename to save as:');
-                    saveFile(filename, editor.value);
+                    saveFilePrompt();
                 }
             });
 
@@ -142,6 +181,7 @@
                     .then(content => {
                         editor.value = content;
                         renderPreview();
+                        updateCurrentFileInfo(filename); // Update current file info
                     });
             }
 
@@ -162,6 +202,10 @@
                         alert('Error saving file: ' + data.error);
                     }
                 });
+            }
+
+            function updateCurrentFileInfo(filename) {
+                document.getElementById('current-filename').textContent = filename;
             }
 
             function renderPreview() {
