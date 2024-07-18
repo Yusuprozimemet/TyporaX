@@ -9,22 +9,26 @@ body {
 }
 
 .menu-bar {
-    background-color: #333;
-    color: white;
-    padding: 10px;
     display: flex;
-    justify-content: space-around;
-    font-size: 0.9em;
+    background-color: #333;
+    padding: 10px;
+    border-bottom: 1px solid #666;
 }
 
-.menu-bar div {
+.menu-bar > div {
+    position: relative;
+    padding: 8px 12px;
     cursor: pointer;
-    padding: 0 10px;
-    transition: background-color 0.3s;
+    border-right: 1px solid #666;
+    color: #ccc;
 }
 
-.menu-bar div:hover {
+.menu-bar > div:hover {
     background-color: #444;
+}
+
+.menu-bar > div:last-child {
+    border-right: none;
 }
 
 .container {
@@ -91,14 +95,24 @@ body {
     background-color: #f0f0f0;
 }
 
-.editor {
+.file-item.selected {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    border-left: 4px solid #0056b3;
+}
+
+.editor, #markdown-preview {
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
     padding: 10px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     border-left: 1px solid #ccc;
+}
+
+.editor {
+    display: flex;
+    flex-direction: column;
 }
 
 textarea#markdown-editor {
@@ -118,10 +132,42 @@ textarea#markdown-editor:focus {
     border-color: #007bff;
 }
 
+#markdown-preview {
+    display: none; /* Hidden by default */
+    width: 100%;
+    padding: 10px;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border-left: 1px solid #ccc;
+    font-family: Arial, sans-serif;
+    font-size: 1em;
+    line-height: 1.5;
+}
+
 #search-input {
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    color: #ccc;
+    border: 1px solid #666;
+    z-index: 1;
+}
+
+.submenu div {
+    padding: 8px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.submenu div:hover {
+    background-color: #444;
 }

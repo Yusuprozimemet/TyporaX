@@ -120,6 +120,21 @@ def rename_file():
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+    
+@app.route('/delete', methods=['POST'])
+def delete_file():
+    data = request.get_json()
+    filename = data.get('filename')
+
+    try:
+        file_path = os.path.join(ARTIFACTS_DIR, filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'File not found'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 
 if __name__ == '__main__':
