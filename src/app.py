@@ -6,15 +6,15 @@ from utils import list_md_files, open_md_file, save_file, search_files, save_use
 from chatbot import Chatbot
 import yaml
 
-
 app = Flask(__name__)
 
-# Load configuration from config.yaml
-with open('config.yaml', 'r') as config_file:
+# Use absolute path for config.yaml inside the src directory
+config_path = os.path.join(os.path.dirname(__file__), 'config.yaml')
+with open(config_path, 'r') as config_file:
     config = yaml.safe_load(config_file)
 
 # Initialize Chatbot with the path to your YAML configuration file
-chatbot = Chatbot.from_config('config.yaml')
+chatbot = Chatbot.from_config(config_path)
 
 app.secret_key = 'your_secret_key_here'
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'img')
@@ -25,6 +25,9 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Define your routes below...
+
 
 # Route for the home page (index.html)
 @app.route('/')

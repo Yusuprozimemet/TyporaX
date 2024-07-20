@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Open the user's default email client with a pre-filled address
     function openContactEmail() {
-        window.location.href = 'mailto:TyporaX.2024@gmail.com?subject=Support Request';
+        window.location.href = 'mailto:yusup.rozimemet@gmail.com?subject=Support Request';
     }
 
     // Open the GitHub issues page in a new tab

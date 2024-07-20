@@ -1,17 +1,17 @@
 [
     {
-        "email": "yusuf.rozimemet@gmail.com",
+        "email": "yusup.rozimemet@gmail.com",
         "username": "yusup",
         "password": "abc1234"
-    },
-    {
-        "email": "anotheruser@example.com",
-        "username": "anotheruser",
-        "password": "password123"
     },
     {
         "email": "apple@gmail.com",
         "username": "hello",
         "password": "1234"
+    },
+    {
+        "email": "test@example.com",
+        "username": "testuser",
+        "password": "password123"
     }
 ]

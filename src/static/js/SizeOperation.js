@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const menuSize = document.getElementById('menu-Size');
     const submenuSize = document.getElementById('submenu-Size');
     const markdownEditorElement = document.getElementById('markdown-editor');
@@ -21,10 +21,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const selectionStart = markdownEditorElement.selectionStart;
         const selectionEnd = markdownEditorElement.selectionEnd;
         const selectedText = markdownEditorElement.value.substring(selectionStart, selectionEnd);
-        
+
         let replacementText = '';
-        
-        switch(action) {
+
+        switch (action) {
             case 'heading1':
                 replacementText = `# ${selectedText}`;
                 break;
@@ -44,16 +44,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 replacementText = `###### ${selectedText}`;
                 break;
             case 'image-small':
-                replacementText = `![Image](${selectedText})`; // Adjust size through CSS
+                replacementText = `<img src="${selectedText}" alt="Image" style="width:10%;">`;
                 break;
             case 'image-medium':
-                replacementText = `![Image](${selectedText})`; // Adjust size through CSS
+                replacementText = `<img src="${selectedText}" alt="Image" style="width:50%;">`;
                 break;
             case 'image-large':
-                replacementText = `![Image](${selectedText})`; // Adjust size through CSS
+                replacementText = `<img src="${selectedText}" alt="Image" style="width:90%;">`;
                 break;
             case 'image-center':
-                replacementText = `![Image](${selectedText})\n\n<center>![Image](${selectedText})</center>`; // Center image using HTML
+                replacementText = `<p align="center">\n<img src="${selectedText}" alt="Image" style="width:50%;">\n</p>`;
                 break;
             default:
                 return;

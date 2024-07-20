@@ -1,145 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Editor</title>
+    <title id="page-title">Markdown Editor</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Uyghur&display=swap" rel="stylesheet">
     <style>
-       /* Styling for the overlay */
-#overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 999;
-    transition: opacity 0.3s ease;
-}
+        body {
+            font-family: 'Noto Sans Uyghur', sans-serif;
+            direction: ltr;
+            font-size: 16px;
+            line-height: 1.5;
+        }
 
-/* Basic styling for the pop-up windows */
-.popup {
-    display: none;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    background: #ffffff;
-    z-index: 1000;
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    transition: all 0.3s ease;
-}
-
-.popup input,
-.popup textarea {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-.popup button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 0 auto;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #ffffff;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.popup button:hover {
-    background-color: #0056b3;
-}
-
-/* Pop-up window entrance animation */
-.popup-enter {
-    display: block;
-    opacity: 0;
-    transform: translate(-50%, -40%);
-}
-
-.popup-enter-active {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.popup-exit {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-}
-
-.popup-exit-active {
-    opacity: 0;
-    transform: translate(-50%, -40%);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
+        .uyghur-text {
+            font-family: 'Noto Sans Uyghur', sans-serif;
+        }
     </style>
 </head>
-
 <body>
+    <header>
+        
+    </header>
     <div class="menu-bar">
         <div id="menu-Size">Size</div>
         <div id="menu-format">Format</div>
         <div id="menu-themes">Themes</div>
         <div id="menu-help">Help</div>
         <div id="menu-insert">Insert</div>
-        <div id="menu-Setting">Setting</div>
+        
         <div id="menu-toggle-preview">Toggle Preview</div>
         <div id="menu-Check">Check Grammar</div>
     </div>
-
     <div id="submenu-Size" class="submenu">
-        <div data-action="heading1">Heading 1</div>
-        <div data-action="heading2">Heading 2</div>
-        <div data-action="heading3">Heading 3</div>
-        <div data-action="heading4">Heading 4</div>
-        <div data-action="heading5">Heading 5</div>
-        <div data-action="heading6">Heading 6</div>
-        <div data-action="image-small">Image Small</div>
-        <div data-action="image-medium">Image Medium</div>
-        <div data-action="image-large">Image Large</div>
-        <div data-action="image-center">Image Center</div>
+        <div data-action="heading1" id="submenu-heading1">Heading 1</div>
+        <div data-action="heading2" id="submenu-heading2">Heading 2</div>
+        <div data-action="heading3" id="submenu-heading3">Heading 3</div>
+        <div data-action="heading4" id="submenu-heading4">Heading 4</div>
+        <div data-action="heading5" id="submenu-heading5">Heading 5</div>
+        <div data-action="heading6" id="submenu-heading6">Heading 6</div>
+        <div data-action="image-small" id="submenu-image-small">Image Small</div>
+        <div data-action="image-medium" id="submenu-image-medium">Image Medium</div>
+        <div data-action="image-large" id="submenu-image-large">Image Large</div>
+        <div data-action="image-center" id="submenu-image-center">Image Center</div>
     </div>
     <div id="submenu-format" class="submenu">
-        <div data-action="strong">Strong</div>
-        <div data-action="emphasis">Emphasis</div>
-        <div data-action="underline">Underline</div>
-        <div data-action="code">Code</div>
-        <div data-action="hyperlink">Hyperlink</div>
-        <div data-action="comment">Comment</div>
-        <div data-action="clear-format">Clear Format</div>
+        <div data-action="strong" id="submenu-strong">Strong</div>
+        <div data-action="emphasis" id="submenu-emphasis">Emphasis</div>
+        <div data-action="underline" id="submenu-underline">Underline</div>
+        <div data-action="code" id="submenu-code">Code</div>
+        <div data-action="hyperlink" id="submenu-hyperlink">Hyperlink</div>
+        <div data-action="comment" id="submenu-comment">Comment</div>
+        <div data-action="clear-format" id="submenu-clear-format">Clear Format</div>
     </div>
     <div id="submenu-themes" class="submenu">
-        <div data-action="night">Night Mode</div>
-        <div data-action="day">Day Mode</div>
+        <div data-action="night" id="submenu-night">Night Mode</div>
+        <div data-action="day" id="submenu-day">Day Mode</div>
     </div>
     <div id="submenu-help" class="submenu">
-        <div data-action="Contact">Contact</div>
-        <div data-action="Submit">Submit Issue</div>
-        <div data-action="copy File">Ctrl+X Copy</div>
-        <div data-action="Rename">Ctrl+R Rename</div>
-        <div data-action="Save">Ctrl+S Save</div>
-        <div data-action="Delete">Ctrl+D Delete</div>
-        <div data-action="New">Ctrl+A New</div>
+        <div data-action="Contact" id="submenu-contact">Contact</div>
+        <div data-action="Submit" id="submenu-submit">Submit Issue</div>
+        <div data-action="copy File" id="submenu-copy-file">Ctrl+X Copy</div>
+        <div data-action="Rename" id="submenu-rename">Ctrl+R Rename</div>
+        <div data-action="Save" id="submenu-save">Ctrl+S Save</div>
+        <div data-action="Delete" id="submenu-delete">Ctrl+D Delete</div>
+        <div data-action="New" id="submenu-new">Ctrl+A New</div>
     </div>
-
     <div class="container">
         <aside class="sidebar">
             <div class="tabs">
@@ -147,16 +74,15 @@
                 <div id="tab-search" class="tab">Search</div>
             </div>
             <div id="content-files" class="content active">
-                <h2>Files</h2>
+                <h2 id="files-title">Files</h2>
                 <div id="file-list"></div>
             </div>
             <div id="content-search" class="content">
-                <h2>Search</h2>
+                <h2 id="search-title">Search</h2>
                 <input type="text" id="search-input" placeholder="Search files...">
                 <div id="search-results"></div>
             </div>
         </aside>
-
         <main class="editor">
             <textarea id="markdown-editor" placeholder="Start writing your markdown..."></textarea>
             <div id="markdown-preview" style="display: none;"></div>
@@ -164,29 +90,28 @@
             <input type="hidden" id="current-filename"> <!-- Hidden input to hold current filename -->
         </main>
     </div>
-
     <footer>
-        <!-- Footer content -->
+        <select id="language-selector">
+            <option value="en">English</option>
+            <option value="ug">Uyghur</option>
+            <option value="zh">Chinese</option>
+        </select>
         <p>&copy; 2024 TyporaX by R.Yusup</p>
     </footer>
-
     <div id="overlay"></div>
-
     <div id="input-popup" class="popup">
-        <h2>Check Grammar</h2>
-        <label for="command">Write your command</label>
+        <h2 id="popup-title">Check Grammar</h2>
+        <label for="command" id="command-label">Write your command</label>
         <input type="text" id="command">
-        <label for="text">Paste your text</label>
+        <label for="text" id="text-label">Paste your text</label>
         <textarea id="text" rows="5"></textarea>
         <button id="run-btn">Run</button>
     </div>
-
     <div id="results-popup" class="popup">
-        <h2>Results</h2>
+        <h2 id="results-title">Results</h2>
         <div id="results"></div>
         <button id="close-results-btn">Close</button>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/js/utils.js"></script>
     <script src="/static/js/Search.js"></script>
@@ -200,7 +125,7 @@
     <script src="/static/js/Insert.js"></script>
     <script src="/static/js/CheckGrammarly.js"></script>
     <script src="/static/js/OpenSetting.js"></script>
-    
+    <script src="/static/js/translations.js"></script>
+    <script src="/static/js/editor.js"></script>
 </body>
-
 </html>
