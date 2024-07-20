@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         handleCopyFile();
                     }
                     break;
-                case 'n': // Create new file
+                case 'q': // Create new file
                     event.preventDefault();
                     handleCreateNewFile();
                     break;

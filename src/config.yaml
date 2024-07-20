@@ -1,4 +1,4 @@
-api_key: "Add Your API Key Here"
+api_key: " Add your api key here"
 engine: "gpt-3.5-turbo"
 proxy: null
 max_tokens: 4000

@@ -1,9 +1,7 @@
-Here is a breakdown of how `editor.html`, `editor.js`, `app.py`, and `FileOperation.js` interact within a web application:
-
 ### **1. `editor.html`**
 
 **Role**: 
-- `editor.html` is a template that defines the structure and content of the Markdown editor page.
+- `editor.html` are a template that define the structures and content of the Markdown editors page.
 - It extends a base layout (`base.html`) and includes specific HTML elements related to the editor, such as the text area for editing Markdown, preview area, and sidebar.
 
 **Responsibilities**:

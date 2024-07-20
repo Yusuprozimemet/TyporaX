@@ -65,7 +65,7 @@
         <div data-action="Rename" id="submenu-rename">Ctrl+R Rename</div>
         <div data-action="Save" id="submenu-save">Ctrl+S Save</div>
         <div data-action="Delete" id="submenu-delete">Ctrl+D Delete</div>
-        <div data-action="New" id="submenu-new">Ctrl+A New</div>
+        <div data-action="New" id="submenu-new">Ctrl+Q New</div>
     </div>
     <div class="container">
         <aside class="sidebar">
@@ -83,12 +83,12 @@
                 <div id="search-results"></div>
             </div>
         </aside>
-        <main class="editor">
+        <main class="editor" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
             <textarea id="markdown-editor" placeholder="Start writing your markdown..."></textarea>
             <div id="markdown-preview" style="display: none;"></div>
             <input type="file" id="image-upload" accept="image/*" style="display: none;">
             <input type="hidden" id="current-filename"> <!-- Hidden input to hold current filename -->
-        </main>
+        </main>        
     </div>
     <footer>
         <select id="language-selector">
@@ -127,5 +127,6 @@
     <script src="/static/js/OpenSetting.js"></script>
     <script src="/static/js/translations.js"></script>
     <script src="/static/js/editor.js"></script>
+    <script src="/static/js/DropDown.js"></script>
 </body>
 </html>
