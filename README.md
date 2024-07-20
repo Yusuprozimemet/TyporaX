@@ -3,9 +3,12 @@
 ## Why TyporaX?
 
 Because I used to use Typora and I liked it very much. I usually use it to write simple lab notes with plenty of photos. It is an amazing experience. Although Typora helped me a lot, I always wanted Typora to have a Grammarly function to correct my English. So here I am. I added some Typora-like sidebar where I can see files and look for files based on the keywords that I insert. On top of that, I additionally added Uyghur and Chinese languages to the editor site.
+
 <img src="Screenshot_2345.png" alt="Image" style="width:60%;"> 
 
-you can drop down the image on the markdown editor!!! More importantly, to satisfy my Grammarly need, I used the ChatGPT API to ask to correct my grammar. Moreover, I can ask many things as much as I want about my text, summarize my text, and even format the markdown editor for various files if I want to insert them.![Screenshot (2346).png](Screenshot_2346.png)
+you can drop down the image on the markdown editor!!! More importantly, to satisfy my Grammarly need, I used the ChatGPT API to ask to correct my grammar. Moreover, I can ask many things as much as I want about my text, summarize my text, and even format the markdown editor for various files if I want to insert them.
+
+![Screenshot (2346).png](Screenshot_2346.png)
 
 I can change the size like this:
 
