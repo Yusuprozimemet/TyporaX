@@ -7,38 +7,89 @@
     <title>Markdown Editor</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <style>
-        /* Basic styling for the pop-up windows */
-        .popup {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background: #fff;
-            z-index: 1000;
-            padding: 20px;
-        }
-        .popup input, .popup textarea {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .popup button {
-            display: block;
-            margin: 0 auto;
-        }
-        #overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
+       /* Styling for the overlay */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    transition: opacity 0.3s ease;
+}
+
+/* Basic styling for the pop-up windows */
+.popup {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background: #ffffff;
+    z-index: 1000;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    transition: all 0.3s ease;
+}
+
+.popup input,
+.popup textarea {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.popup button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 0 auto;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.popup button:hover {
+    background-color: #0056b3;
+}
+
+/* Pop-up window entrance animation */
+.popup-enter {
+    display: block;
+    opacity: 0;
+    transform: translate(-50%, -40%);
+}
+
+.popup-enter-active {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.popup-exit {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+.popup-exit-active {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
     </style>
 </head>
 

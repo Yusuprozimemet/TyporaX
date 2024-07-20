@@ -3,8 +3,19 @@ import json
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from utils import list_md_files, open_md_file, save_file, search_files, save_user, load_users
+from chatbot import Chatbot
+import yaml
+
 
 app = Flask(__name__)
+
+# Load configuration from config.yaml
+with open('config.yaml', 'r') as config_file:
+    config = yaml.safe_load(config_file)
+
+# Initialize Chatbot with the path to your YAML configuration file
+chatbot = Chatbot.from_config('config.yaml')
+
 app.secret_key = 'your_secret_key_here'
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'img')
 ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), 'artifacts')
@@ -136,6 +147,23 @@ def delete_file():
     return jsonify({'success': False, 'error': 'No file selected to delete'}), 400
 
 
+@app.route('/ask', methods=['POST'])
+def ask():
+    data = request.json
+    command = data.get('command')
+    text = data.get('text')
+
+    if not command or not text:
+        return jsonify({"error": "Missing command or text"}), 400
+
+    convo_id = "default"
+    chatbot.add_message("user", f"{command}: {text}", convo_id)
+    try:
+        response = chatbot.send_request(convo_id)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    return jsonify({"response": response})
 
 if __name__ == '__main__':
     app.run(debug=True)

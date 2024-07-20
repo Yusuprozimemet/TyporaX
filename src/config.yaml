@@ -10,4 +10,4 @@ frequency_penalty: 0.0
 truncate_limit: 3000
 reply_count: 1
 system_prompt: "You are ChatGPT, a large language model trained by OpenAI. Respond conversationally."
-grammar_prompt: "Please correct the grammar of the following text."
+

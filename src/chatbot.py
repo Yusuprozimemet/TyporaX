@@ -17,7 +17,8 @@ class Chatbot:
         frequency_penalty: float = 0.0,
         truncate_limit: Optional[int] = None,
         reply_count: int = 1,
-        system_prompt: str = "You are ChatGPT, a large language model trained by OpenAI. Respond conversationally",
+        system_prompt: str = "You are ChatGPT, a large language model trained by OpenAI. Respond conversationally.",
+        grammar_prompt: str = "Please correct the grammar of the following text."
     ) -> None:
         """
         Initialize Chatbot with API key
@@ -25,6 +26,7 @@ class Chatbot:
         self.engine: str = engine
         self.api_key: str = api_key
         self.system_prompt: str = system_prompt
+        self.grammar_prompt: str = grammar_prompt  # Store the grammar prompt
         self.max_tokens: int = max_tokens or (
             31000 if "gpt-4-32k" in engine else 7000 if "gpt-4" in engine else 15000 if "gpt-3.5-turbo-16k" in engine else 4000
         )
