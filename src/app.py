@@ -68,6 +68,10 @@ def login():
 def editor():
     return render_template('editor.html')
 
+@app.route('/setting')
+def setting():
+    return render_template('setting.html')
+
 # Route to list markdown files and their content
 @app.route('/files')
 def list_files():
