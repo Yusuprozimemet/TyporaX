@@ -5,21 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        /* Basic styling for the pop-up windows */
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .popup input, .popup textarea {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .popup button {
+            display: block;
+            margin: 0 auto;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
 </head>
 
 <body>
     <div class="menu-bar">
-        <div id="menu-file">File</div>
-        <div id="menu-edit">Edit</div>
-        <div id="menu-paragraph">Paragraph</div>
+        <div id="menu-Size">Size</div>
         <div id="menu-format">Format</div>
         <div id="menu-themes">Themes</div>
         <div id="menu-help">Help</div>
-        <div id="menu-insert-image">Insert</div>
+        <div id="menu-insert">Insert</div>
+        <div id="menu-Setting">Setting</div>
         <div id="menu-toggle-preview">Toggle Preview</div>
+        <div id="menu-Check">Check Grammar</div>
     </div>
-    <div id="submenu-paragraph" class="submenu">
+
+    <div id="submenu-Size" class="submenu">
         <div data-action="heading1">Heading 1</div>
         <div data-action="heading2">Heading 2</div>
         <div data-action="heading3">Heading 3</div>
@@ -29,6 +64,7 @@
         <div data-action="image-small">Image Small</div>
         <div data-action="image-medium">Image Medium</div>
         <div data-action="image-large">Image Large</div>
+        <div data-action="image-center">Image Center</div>
     </div>
     <div id="submenu-format" class="submenu">
         <div data-action="strong">Strong</div>
@@ -43,6 +79,16 @@
         <div data-action="night">Night Mode</div>
         <div data-action="day">Day Mode</div>
     </div>
+    <div id="submenu-help" class="submenu">
+        <div data-action="Contact">Contact</div>
+        <div data-action="Submit">Submit Issue</div>
+        <div data-action="copy File">Ctrl+X Copy</div>
+        <div data-action="Rename">Ctrl+R Rename</div>
+        <div data-action="Save">Ctrl+S Save</div>
+        <div data-action="Delete">Ctrl+D Delete</div>
+        <div data-action="New">Ctrl+A New</div>
+    </div>
+
     <div class="container">
         <aside class="sidebar">
             <div class="tabs">
@@ -59,6 +105,7 @@
                 <div id="search-results"></div>
             </div>
         </aside>
+
         <main class="editor">
             <textarea id="markdown-editor" placeholder="Start writing your markdown..."></textarea>
             <div id="markdown-preview" style="display: none;"></div>
@@ -67,438 +114,40 @@
         </main>
     </div>
 
+    <footer>
+        <!-- Footer content -->
+        <p>&copy; 2024 TyporaX by R.Yusup</p>
+    </footer>
+
+    <div id="overlay"></div>
+
+    <div id="input-popup" class="popup">
+        <h2>Check Grammar</h2>
+        <label for="command">Write your command</label>
+        <input type="text" id="command">
+        <label for="text">Paste your text</label>
+        <textarea id="text" rows="5"></textarea>
+        <button id="run-btn">Run</button>
+    </div>
+
+    <div id="results-popup" class="popup">
+        <h2>Results</h2>
+        <div id="results"></div>
+        <button id="close-results-btn">Close</button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const editor = document.getElementById("markdown-editor");
-            const preview = document.getElementById('markdown-preview');
-            const imageUploadInput = document.getElementById("image-upload");
-            const currentFilenameInput = document.getElementById("current-filename");
-            const togglePreviewButton = document.getElementById('menu-toggle-preview');
-            let isPreviewMode = false;
-
-            const submenuParagraph = document.getElementById('submenu-paragraph');
-            const submenuFormat = document.getElementById('submenu-format');
-            const submenuThemes = document.getElementById('submenu-themes');
-
-            document.getElementById('menu-paragraph').addEventListener('click', function (event) {
-                toggleSubmenu(submenuParagraph, event.target);
-            });
-
-            document.getElementById('menu-format').addEventListener('click', function (event) {
-                toggleSubmenu(submenuFormat, event.target);
-            });
-
-            document.getElementById('menu-themes').addEventListener('click', function (event) {
-                toggleSubmenu(submenuThemes, event.target);
-            });
-
-            function toggleSubmenu(submenu, target) {
-                submenuParagraph.style.display = 'none';
-                submenuFormat.style.display = 'none';
-                submenuThemes.style.display = 'none';
-                if (submenu.style.display === 'block') {
-                    submenu.style.display = 'none';
-                } else {
-                    submenu.style.display = 'block';
-                    const rect = target.getBoundingClientRect();
-                    submenu.style.top = `${rect.bottom}px`;
-                    submenu.style.left = `${rect.left}px`;
-                }
-            }
-
-            document.addEventListener('click', function (event) {
-                if (!event.target.closest('.menu-bar') && !event.target.closest('.submenu')) {
-                    submenuParagraph.style.display = 'none';
-                    submenuFormat.style.display = 'none';
-                    submenuThemes.style.display = 'none';
-                }
-            });
-
-            document.querySelectorAll('.submenu div').forEach(item => {
-                item.addEventListener('click', function () {
-                    const action = this.dataset.action;
-                    handleSubmenuAction(action);
-                    submenuParagraph.style.display = 'none';
-                    submenuFormat.style.display = 'none';
-                    submenuThemes.style.display = 'none';
-                });
-            });
-
-            function handleSubmenuAction(action) {
-                switch (action) {
-                    case 'heading1':
-                        insertText('# ');
-                        break;
-                    case 'heading2':
-                        insertText('## ');
-                        break;
-                    case 'heading3':
-                        insertText('### ');
-                        break;
-                    case 'heading4':
-                        insertText('#### ');
-                        break;
-                    case 'heading5':
-                        insertText('##### ');
-                        break;
-                    case 'heading6':
-                        insertText('###### ');
-                        break;
-                    case 'image-small':
-                        setImageSize('small');
-                        break;
-                    case 'image-medium':
-                        setImageSize('medium');
-                        break;
-                    case 'image-large':
-                        setImageSize('large');
-                        break;
-                    case 'strong':
-                        wrapText('**');
-                        break;
-                    case 'emphasis':
-                        wrapText('*');
-                        break;
-                    case 'underline':
-                        wrapText('<u>', '</u>');
-                        break;
-                    case 'code':
-                        wrapText('`');
-                        break;
-                    case 'hyperlink':
-                        insertText('[link](url)');
-                        break;
-                    case 'comment':
-                        insertText('<!-- comment -->');
-                        break;
-                    case 'clear-format':
-                        clearFormatting();
-                        break;
-                    case 'night':
-                        setTheme('night');
-                        break;
-                    case 'day':
-                        setTheme('day');
-                        break;
-                    default:
-                        alert('Action not implemented.');
-                }
-            }
-
-            function insertText(text) {
-                const start = editor.selectionStart;
-                const end = editor.selectionEnd;
-                const before = editor.value.substring(0, start);
-                const after = editor.value.substring(end);
-                editor.value = before + text + after;
-                editor.selectionStart = editor.selectionEnd = start + text.length;
-                editor.focus();
-                renderPreview();
-            }
-
-            function wrapText(before, after = before) {
-                const start = editor.selectionStart;
-                const end = editor.selectionEnd;
-                const selectedText = editor.value.substring(start, end);
-                const beforeText = editor.value.substring(0, start);
-                const afterText = editor.value.substring(end);
-                editor.value = beforeText + before + selectedText + after + afterText;
-                editor.selectionStart = start + before.length;
-                editor.selectionEnd = end + before.length;
-                editor.focus();
-                renderPreview();
-            }
-
-            function setImageSize(size) {
-                const sizes = {
-                    small: '30%',
-                    medium: '50%',
-                    large: '70%'
-                };
-
-                // Validate the size
-                if (!sizes[size]) {
-                    alert('Invalid size. Please choose from "small", "medium", or "large".');
-                    return;
-                }
-
-                // Prompt for image URL
-                const url = prompt('Enter image URL:');
-                if (url) {
-                    // Create an HTML img tag with size
-                    const imgTag = `<img src="${url}" alt="image" style="max-width: ${sizes[size]}; height: auto;">`;
-                    insertText(imgTag);
-                }
-            }
-
-            function clearFormatting() {
-                const start = editor.selectionStart;
-                const end = editor.selectionEnd;
-                const before = editor.value.substring(0, start);
-                const selectedText = editor.value.substring(start, end);
-                const after = editor.value.substring(end);
-                editor.value = before + selectedText + after;
-                editor.focus();
-                renderPreview();
-            }
-
-            function setTheme(theme) {
-                if (theme === 'night') {
-                    document.body.classList.add('theme-night');
-                } else {
-                    document.body.classList.remove('theme-night');
-                }
-            }
-
-
-            document.getElementById('menu-file').addEventListener('click', function () {
-                const action = prompt('Choose action: New, Save, Save as, Rename, Delete, Settings');
-                handleFileMenuAction(action);
-            });
-
-            document.getElementById('menu-edit').addEventListener('click', function () {
-                const action = prompt('Choose action: Check Grammarly');
-                handleEditMenuAction(action);
-            });
-
-            document.getElementById('menu-insert-image').addEventListener('click', function () {
-                imageUploadInput.click();
-            });
-
-            imageUploadInput.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const formData = new FormData();
-                    formData.append('image', file);
-
-                    fetch('/upload_image', {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                const imageUrl = data.url;
-                                const markdownImage = `![alt text](${imageUrl})`;
-                                editor.value += markdownImage;
-                                if (isPreviewMode) renderPreview();
-                            } else {
-                                alert('Error uploading image: ' + data.error);
-                            }
-                        });
-                }
-            });
-
-            function openFile(filename) {
-                fetch('/open?filename=' + filename)
-                    .then(response => response.text())
-                    .then(content => {
-                        editor.value = content;
-                        renderPreview();
-                        updateCurrentFileInfo(filename);
-                    });
-            }
-
-            function saveFile(filename, content) {
-                fetch('/save', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ filename: filename, content: content })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('File saved successfully');
-                            loadFiles();
-                        } else {
-                            alert('Error saving file: ' + data.error);
-                        }
-                    });
-            }
-
-            function updateCurrentFileInfo(filename) {
-                currentFilenameInput.value = filename;
-            }
-
-            function renderPreview() {
-                preview.innerHTML = marked.parse(editor.value);
-            }
-
-            function renameFile(item) {
-                const currentFilename = item.dataset.filename;
-                const newFilename = prompt('Enter new filename:', currentFilename);
-
-                if (newFilename && newFilename.trim() !== '' && newFilename !== currentFilename) {
-                    fetch('/rename', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ currentFilename: currentFilename, newFilename: newFilename })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                item.dataset.filename = newFilename;
-                                item.textContent = newFilename;
-                                if (currentFilename === currentFilenameInput.value) {
-                                    updateCurrentFileInfo(newFilename);
-                                }
-                                alert('File renamed successfully');
-                            } else {
-                                alert('Error renaming file: ' + data.error);
-                            }
-                        });
-                }
-            }
-
-            function deleteFile(filename) {
-                fetch('/delete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ filename: filename })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('File deleted successfully');
-                            loadFiles();
-                            if (filename === currentFilenameInput.value) {
-                                editor.value = '';
-                                currentFilenameInput.value = '';
-                            }
-                        } else {
-                            alert('Error deleting file: ' + data.error);
-                        }
-                    });
-            }
-
-            function selectFile(item) {
-                document.querySelectorAll('.file-item').forEach(fileItem => {
-                    fileItem.classList.remove('selected');
-                });
-                item.classList.add('selected');
-            }
-
-            function handleFileMenuAction(action) {
-                switch (action.trim().toLowerCase()) {
-                    case 'new':
-                        editor.value = '';
-                        updateCurrentFileInfo('newfile.md');
-                        break;
-                    case 'open':
-                        const filename = prompt('Enter filename to open:');
-                        if (filename) {
-                            openFile(filename);
-                        }
-                        break;
-                    case 'save':
-                        saveFilePrompt();
-                        break;
-                    case 'save as':
-                        saveFilePrompt();
-                        break;
-                    case 'rename':
-                        const currentFile = document.querySelector('.file-item.selected');
-                        if (currentFile) {
-                            renameFile(currentFile);
-                        } else {
-                            alert('Please select a file to rename.');
-                        }
-                        break;
-                    case 'delete':
-                        const selectedFile = document.querySelector('.file-item.selected');
-                        if (selectedFile) {
-                            const filename = selectedFile.dataset.filename;
-                            if (confirm(`Are you sure you want to delete "${filename}"?`)) {
-                                deleteFile(filename);
-                            }
-                        } else {
-                            alert('Please select a file to delete.');
-                        }
-                        break;
-                    case 'settings':
-                        alert('Settings menu will be implemented later.');
-                        break;
-                    default:
-                        alert('Invalid action.');
-                }
-            }
-
-            function handleEditMenuAction(action) {
-                switch (action.trim().toLowerCase()) {
-                    case 'check grammarly':
-                        alert('Grammarly check will be implemented later.');
-                        break;
-                    default:
-                        alert('Invalid action.');
-                }
-            }
-
-            function saveFilePrompt() {
-                const filename = prompt("Enter filename to save as:", getCurrentFilename());
-                if (filename) {
-                    saveFile(filename, editor.value);
-                    updateCurrentFileInfo(filename);
-                }
-            }
-
-            function getCurrentFilename() {
-                const currentFile = document.querySelector('.file-item.selected');
-                return currentFile ? currentFile.dataset.filename : 'newfile.md';
-            }
-
-            // Toggle Preview
-            togglePreviewButton.addEventListener('click', function () {
-                isPreviewMode = !isPreviewMode;
-                if (isPreviewMode) {
-                    editor.style.display = 'none';
-                    preview.style.display = 'block';
-                    renderPreview(); // Ensure the preview is updated when toggling
-                } else {
-                    editor.style.display = 'block';
-                    preview.style.display = 'none';
-                }
-            });
-
-            // Initial preview update
-            renderPreview();
-
-            function loadFiles() {
-                fetch('/files')
-                    .then(response => response.json())
-                    .then(files => {
-                        const fileExplorer = document.getElementById('file-list');
-                        fileExplorer.innerHTML = files.map(file => `<div class="file-item" data-filename="${file}">${file}</div>`).join('');
-                        document.querySelectorAll('.file-item').forEach(item => {
-                            item.addEventListener('click', function (event) {
-                                if (event.detail === 2) {
-                                    renameFile(this);
-                                } else {
-                                    selectFile(this);
-                                    openFile(this.dataset.filename);
-                                }
-                            });
-                        });
-                    });
-            }
-
-            loadFiles();
-
-            // Function to handle Ctrl+S keypress for instant save
-            document.addEventListener("keydown", function (event) {
-                if (event.ctrlKey && event.key === "s") {
-                    event.preventDefault();
-                    saveFilePrompt();
-                }
-            });
-        });
-    </script>
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/Search.js"></script>
+    <script src="/static/js/submenu.js"></script>
+    <script src="/static/js/FileOperation.js"></script>
+    <script src="/static/js/Help.js"></script>
+    <script src="/static/js/TogglePreview.js"></script>
+    <script src="/static/js/Themes.js"></script>
+    <script src="/static/js/SizeOperation.js"></script>
+    <script src="/static/js/FormatOperation.js"></script>
+    <script src="/static/js/Insert.js"></script>
+    <script src="/static/js/CheckGrammarly.js"></script>
 </body>
 
 </html>

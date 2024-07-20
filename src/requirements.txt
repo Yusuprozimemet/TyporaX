@@ -1,1 +1,6 @@
 Flask
+requests
+tiktoken
+PyYAML
+
+# -e .

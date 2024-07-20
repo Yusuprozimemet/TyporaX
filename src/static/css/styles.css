@@ -41,6 +41,7 @@ body {
     flex-grow: 1;
 }
 
+/* Sidebar styles */
 .sidebar {
     width: 250px;
     background-color: #fff;
@@ -48,6 +49,7 @@ body {
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     overflow-y: auto;
     border-right: 1px solid #ccc;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
 .sidebar h2 {
@@ -87,14 +89,15 @@ body {
     display: block;
 }
 
-.file-item, .search-results-item {
+/* File item styles */
+.file-item, .search-result {
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
     transition: background-color 0.3s;
 }
 
-.file-item:hover, .search-results-item:hover {
+.file-item:hover, .search-result:hover {
     background-color: #f0f0f0;
 }
 
@@ -105,17 +108,38 @@ body {
     border-left: 4px solid #0056b3;
 }
 
+/* Search result styles */
+.search-result {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+}
+
+.search-result:hover {
+    background-color: #f0f0f0;
+}
+
+.search-result strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* editor */
+
 .editor, #markdown-preview {
     flex-grow: 1;
     padding: 10px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     border-left: 1px solid #ccc;
+    display: none; /* Hide both initially */
 }
 
 .editor {
-    display: flex;
+    display: flex; /* Show editor by default */
     flex-direction: column;
+    
 }
 
 textarea#markdown-editor {
@@ -136,13 +160,8 @@ textarea#markdown-editor:focus {
 }
 
 #markdown-preview {
-    display: none; /* Hidden by default */
-    width: 100%;
-    padding: 10px;
-    background-color: #f8f9fa;
     overflow-y: auto;
     box-sizing: border-box;
-    border-left: 1px solid #ccc;
     font-family: Arial, sans-serif;
     font-size: 1em;
     line-height: 1.5;
@@ -173,6 +192,71 @@ textarea#markdown-editor:focus {
 
 .submenu div:hover {
     background-color: #444;
+}
+
+
+/* Day theme styles */
+.theme-day body {
+    background-color: #fff;
+    color: #000;
+}
+
+.theme-day .menu-bar {
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+}
+
+.theme-day .menu-bar > div {
+    color: #000;
+}
+
+.theme-day .menu-bar > div:hover {
+    background-color: #ddd;
+}
+
+.theme-day .sidebar {
+    background-color: #f0f0f0;
+    border-right: 1px solid #ddd;
+}
+
+.theme-day .file-item, .theme-day .search-results-item {
+    border-bottom: 1px solid #ddd;
+}
+
+.theme-day .file-item:hover, .theme-day .search-results-item:hover {
+    background-color: #e0e0e0;
+}
+
+.theme-day .editor, .theme-day #markdown-preview {
+    background-color: #fff;
+    border-left: 1px solid #ddd;
+}
+
+.theme-day textarea#markdown-editor {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #000;
+}
+
+.theme-day #markdown-preview {
+    background-color: #fff;
+    color: #000;
+}
+
+.theme-day #search-input {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #000;
+}
+
+.theme-day .submenu {
+    background-color: #f5f5f5;
+    color: #000;
+    border: 1px solid #ddd;
+}
+
+.theme-day .submenu div:hover {
+    background-color: #ddd;
 }
 
 /* Dark theme styles */
@@ -237,4 +321,22 @@ textarea#markdown-editor:focus {
 
 .theme-night .submenu div:hover {
     background-color: #555;
+}
+
+/* styles.css */
+img.small {
+    width: 150px; /* Adjust as needed */
+}
+
+img.medium {
+    width: 300px; /* Adjust as needed */
+}
+
+img.large {
+    width: 450px; /* Adjust as needed */
+}
+
+img.center {
+    display: block;
+    margin: 0 auto;
 }

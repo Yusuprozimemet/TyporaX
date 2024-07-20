@@ -1,3 +1,4 @@
+
 import os
 import json
 
@@ -12,14 +13,23 @@ def list_md_files():
     return [f for f in os.listdir(ARTIFACTS_DIR) if f.endswith('.md')]
 
 def search_files(keyword):
-    """Search for a keyword in all markdown files and return matching filenames."""
-    matching_files = []
-    for filename in list_md_files():
-        with open(os.path.join(ARTIFACTS_DIR, filename), 'r') as file:
-            content = file.read()
-            if keyword.lower() in content.lower():
-                matching_files.append(filename)
-    return matching_files
+    results = []
+    for filename in os.listdir(ARTIFACTS_DIR):
+        if filename.endswith('.md'):
+            file_path = os.path.join(ARTIFACTS_DIR, filename)
+            try:
+                with open(file_path, 'r') as file:
+                    lines = file.readlines()
+                    for i, line in enumerate(lines):
+                        if keyword.lower() in line.lower():
+                            results.append({
+                                'filename': filename,
+                                'line': i + 1,
+                                'snippet': line.strip()  # Get a snippet of the line
+                            })
+            except Exception as e:
+                print(f"Error reading {filename}: {e}")
+    return results
 
 def save_file(filename, content):
     """Save the content to a file."""
@@ -49,5 +59,4 @@ def load_users():
     except Exception as e:
         print(f"Error loading users: {e}")
     return users
-
 

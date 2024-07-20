@@ -123,18 +123,18 @@ def rename_file():
     
 @app.route('/delete', methods=['POST'])
 def delete_file():
-    data = request.get_json()
+    data = request.json
     filename = data.get('filename')
-
-    try:
+    print(f'Request to delete file: {filename}')  # Debugging
+    if filename:
         file_path = os.path.join(ARTIFACTS_DIR, filename)
         if os.path.exists(file_path):
             os.remove(file_path)
             return jsonify({'success': True})
         else:
-            return jsonify({'success': False, 'error': 'File not found'})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
+            return jsonify({'success': False, 'error': 'File not found'}), 400
+    return jsonify({'success': False, 'error': 'No file selected to delete'}), 400
+
 
 
 if __name__ == '__main__':
