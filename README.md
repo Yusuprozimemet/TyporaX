@@ -2,7 +2,7 @@
 
 ## Why TyporaX?
 
-Because I used to use Typora and I liked it very much. I usually use it to write simple lab notes with plenty of photos. It is an amazing experience. Although Typora helped me a lot, I always wanted Typora to have a Grammarly function to correct my English. So here I am. I added some Typora-like sidebar where I can see files and look for files based on the keywords that I insert. On top of that, I additionally added Uyghur and Chinese languages to the editor site.
+Because I used to use Typora and I liked it very much. I usually use it to write simple lab notes with plenty of photos. It has been an amazing experience. Although Typora helped me a lot, I always wanted Typora to have a Grammarly function to correct my English. So here I am. I added some Typora-like sidebar where I can see files and look for files based on the keywords that I insert. On top of that, I additionally added Uyghur and Chinese languages to the editor site.
 
 <img src="Screenshot_2345.png" alt="Image" style="width:80%;"> 
 
