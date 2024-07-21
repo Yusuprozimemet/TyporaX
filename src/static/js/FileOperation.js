@@ -1,32 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
     const fileListElement = document.getElementById('file-list');
-    const searchInputElement = document.getElementById('search-input');
-    const searchResultsElement = document.getElementById('search-results');
     const markdownEditorElement = document.getElementById('markdown-editor');
     const markdownPreviewElement = document.getElementById('markdown-preview');
     const contentFilesElement = document.getElementById('content-files');
-    const contentSearchElement = document.getElementById('content-search');
     const tabFilesElement = document.getElementById('tab-files');
-    const tabSearchElement = document.getElementById('tab-search');
     const fileInputElement = document.getElementById('fileInput');
     const currentFilenameElement = document.getElementById('current-filename');
 
     let selectedFile = null;
 
-    // Toggle between Files and Search tabs
-    tabFilesElement.addEventListener('click', () => {
-        contentFilesElement.classList.add('active');
-        contentSearchElement.classList.remove('active');
-        tabFilesElement.classList.add('active');
-        tabSearchElement.classList.remove('active');
-    });
-
-    tabSearchElement.addEventListener('click', () => {
-        contentFilesElement.classList.remove('active');
-        contentSearchElement.classList.add('active');
-        tabFilesElement.classList.remove('active');
-        tabSearchElement.classList.add('active');
-    });
 
     // Fetch and display list of markdown files
     function fetchFileList() {
@@ -70,44 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error('Error fetching file content:', error));
     }
 
-    // Search within files
-    searchInputElement.addEventListener('input', () => {
-        const query = searchInputElement.value.trim();
-        if (query === '') {
-            searchResultsElement.innerHTML = '';
-            return;
-        }
-        fetch(`/search?q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(results => {
-                if (!Array.isArray(results)) {
-                    throw new Error('Unexpected response format from /search');
-                }
-                searchResultsElement.innerHTML = results.length > 0
-                    ? results.map(result =>
-                        `<div class="search-result" data-filename="${result.filename}" data-line="${result.line}">
-                            <strong>${result.filename}</strong> (Line ${result.line}): ${result.snippet || 'No snippet available'}
-                        </div>`
-                    ).join('')
-                    : '<p>No results found.</p>';
-                addSearchResultClickHandlers();
-            })
-            .catch(error => {
-                console.error('Error searching files:', error);
-                searchResultsElement.innerHTML = '<p>Error occurred while searching.</p>';
-            });
-    });
-
-    // Add click handlers to search results
-    function addSearchResultClickHandlers() {
-        document.querySelectorAll('.search-result').forEach(result => {
-            result.addEventListener('click', () => {
-                const filename = result.getAttribute('data-filename');
-                fetchFileContent(filename);
-                scrollToLine(result.getAttribute('data-line'));
-            });
-        });
-    }
 
     // Function to scroll to a specific line in the editor (if desired)
     function scrollToLine(lineNumber) {

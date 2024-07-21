@@ -21,7 +21,7 @@ def search_files(keyword):
         if filename.endswith('.md'):
             file_path = os.path.join(ARTIFACTS_DIR, filename)
             try:
-                with open(file_path, 'r') as file:
+                with open(file_path, 'r', encoding='utf-8', errors='replace') as file:
                     lines = file.readlines()
                     for i, line in enumerate(lines):
                         if keyword.lower() in line.lower():
@@ -31,7 +31,7 @@ def search_files(keyword):
                                 'snippet': line.strip()  # Get a snippet of the line
                             })
             except Exception as e:
-                print(f"Error reading {filename}: {e}")
+                logging.error(f"Error reading {filename}: {e}")
     return results
 
 def save_file(filename, content):

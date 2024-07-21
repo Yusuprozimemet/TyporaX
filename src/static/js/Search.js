@@ -1,4 +1,3 @@
-// edit.js
 
 document.addEventListener("DOMContentLoaded", function() {
     const fileListElement = document.getElementById('file-list');
