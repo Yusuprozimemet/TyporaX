@@ -1,6 +1,9 @@
 
 import os
 import json
+import logging
+
+logging.basicConfig(level=logging.DEBUG) 
 
 ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), 'artifacts')
 USERS_FILE = os.path.join(ARTIFACTS_DIR, 'users.json')
@@ -33,13 +36,31 @@ def search_files(keyword):
 
 def save_file(filename, content):
     """Save the content to a file."""
-    with open(os.path.join(ARTIFACTS_DIR, filename), 'w') as file:
-        file.write(content)
+    full_path = os.path.join(ARTIFACTS_DIR, filename)
+    try:
+        with open(full_path, 'w', encoding='utf-8') as file:
+            file.write(content)
+        logging.info(f"File saved successfully: {full_path}")
+    except Exception as e:
+        logging.error(f"Error saving file {full_path}: {str(e)}")
+        raise
 
 def open_md_file(filename):
     """Open a file and return its content."""
-    with open(os.path.join(ARTIFACTS_DIR, filename), 'r') as file:
-        return file.read()
+    full_path = os.path.join(ARTIFACTS_DIR, filename)
+    try:
+        with open(full_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        logging.info(f"File opened successfully: {full_path}")
+        return content
+    except UnicodeDecodeError:
+        logging.warning(f"UTF-8 decode failed for {full_path}, trying with iso-8859-1")
+        with open(full_path, 'r', encoding='iso-8859-1') as file:
+            content = file.read()
+        return content
+    except Exception as e:
+        logging.error(f"Error opening file {full_path}: {str(e)}")
+        raise
 
 def save_user(email, username, password):
     """Save user data to JSON file."""

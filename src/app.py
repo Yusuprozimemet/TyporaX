@@ -5,6 +5,9 @@ from werkzeug.utils import secure_filename
 from utils import list_md_files, open_md_file, save_file, search_files, save_user, load_users
 from chatbot import Chatbot
 import yaml
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
@@ -88,7 +91,6 @@ def search():
     results = search_files(keyword)
     return jsonify(results)
 
-# Route to save a markdown file
 @app.route('/save', methods=['POST'])
 def save():
     data = request.get_json()
@@ -100,9 +102,9 @@ def save():
         save_file(filename, content)
         return jsonify({'success': True})
     except Exception as e:
+        logging.error(f"Error in save route: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
 
-# Route to open a markdown file
 @app.route('/open')
 def open_file():
     filename = request.args.get('filename')
@@ -110,8 +112,9 @@ def open_file():
         content = open_md_file(filename)
         return content
     except Exception as e:
+        logging.error(f"Error in open_file route: {str(e)}")
         return str(e), 500
-
+    
 # Route to handle image uploads
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
