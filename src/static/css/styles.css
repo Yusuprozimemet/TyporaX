@@ -35,6 +35,24 @@ body {
     border-right: none;
 }
 
+/* Special Styling for Toggle Preview */
+#menu-toggle-preview {
+    position: relative;
+}
+
+#menu-toggle-preview.active {
+    background-color: #555;
+    color: #fff;
+    border-bottom: 2px solid #0f0; /* Green underline to indicate preview mode */
+}
+
+#menu-toggle-preview.inactive {
+    background-color: #e6e3e3;
+    color: #ccc;
+    border-bottom: 2px solid rgb(245, 242, 242); /* Red underline to indicate edit mode */
+}
+
+/* Submenu */
 .submenu {
     display: none;
     position: absolute;
