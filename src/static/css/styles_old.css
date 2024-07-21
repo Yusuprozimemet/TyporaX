@@ -1,4 +1,4 @@
-/* Global Styles */
+/* Default light theme */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -11,7 +11,6 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Menu Bar Styles */
 .menu-bar {
     display: flex;
     background-color: #333;
@@ -35,26 +34,6 @@ body {
     border-right: none;
 }
 
-.submenu {
-    display: none;
-    position: absolute;
-    background-color: #333;
-    color: #ccc;
-    border: 1px solid #666;
-    z-index: 1;
-}
-
-.submenu div {
-    padding: 8px 12px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.submenu div:hover {
-    background-color: #444;
-}
-
-/* Container Styles */
 .container {
     display: flex;
     width: 100%;
@@ -62,7 +41,7 @@ body {
     flex-grow: 1;
 }
 
-/* Sidebar Styles */
+/* Sidebar styles */
 .sidebar {
     width: 250px;
     background-color: #fff;
@@ -110,7 +89,7 @@ body {
     display: block;
 }
 
-/* File Item and Search Result Styles */
+/* File item styles */
 .file-item, .search-result {
     padding: 10px;
     cursor: pointer;
@@ -129,12 +108,25 @@ body {
     border-left: 4px solid #0056b3;
 }
 
+/* Search result styles */
+.search-result {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+}
+
+.search-result:hover {
+    background-color: #f0f0f0;
+}
+
 .search-result strong {
     display: block;
     margin-bottom: 5px;
 }
 
-/* Editor Styles */
+/* editor */
+
 .editor, #markdown-preview {
     flex-grow: 1;
     padding: 10px;
@@ -147,6 +139,7 @@ body {
 .editor {
     display: flex; /* Show editor by default */
     flex-direction: column;
+    
 }
 
 textarea#markdown-editor {
@@ -174,7 +167,6 @@ textarea#markdown-editor:focus {
     line-height: 1.5;
 }
 
-/* Search Input Styles */
 #search-input {
     width: 100%;
     padding: 8px;
@@ -183,9 +175,27 @@ textarea#markdown-editor:focus {
     border-radius: 4px;
 }
 
-/* Theme Styles */
+.submenu {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    color: #ccc;
+    border: 1px solid #666;
+    z-index: 1;
+}
 
-/* Day Theme Styles */
+.submenu div {
+    padding: 8px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.submenu div:hover {
+    background-color: #444;
+}
+
+
+/* Day theme styles */
 .theme-day body {
     background-color: #fff;
     color: #000;
@@ -249,7 +259,7 @@ textarea#markdown-editor:focus {
     background-color: #ddd;
 }
 
-/* Dark Theme Styles */
+/* Dark theme styles */
 .theme-night body {
     background-color: #333;
     color: #eee;
@@ -313,7 +323,7 @@ textarea#markdown-editor:focus {
     background-color: #555;
 }
 
-/* Image Styles */
+/* styles.css */
 img.small {
     width: 150px; /* Adjust as needed */
 }
@@ -331,8 +341,10 @@ img.center {
     margin: 0 auto;
 }
 
-/* Overlay and Pop-up Styles */
-#overlay {
+
+/* Styling for grammarly */
+ /* Styling for the overlay */
+ #overlay {
     display: none;
     position: fixed;
     top: 0;
@@ -344,6 +356,7 @@ img.center {
     transition: opacity 0.3s ease;
 }
 
+/* Basic styling for the pop-up windows */
 .popup {
     display: none;
     position: fixed;
@@ -361,6 +374,7 @@ img.center {
     overflow-y: auto; /* Adds a scrollbar for longer content */
     transition: all 0.3s ease;
 }
+
 
 .popup input,
 .popup textarea {
@@ -391,6 +405,7 @@ img.center {
     background-color: #0056b3;
 }
 
+/* Pop-up window entrance animation */
 .popup-enter {
     display: block;
     opacity: 0;
