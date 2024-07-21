@@ -66,6 +66,7 @@
         <div data-action="Save" id="submenu-save">Ctrl+S Save</div>
         <div data-action="Delete" id="submenu-delete">Ctrl+D Delete</div>
         <div data-action="New" id="submenu-new">Ctrl+Q New</div>
+        <div data-action="Open" id="submenu-open">Ctrl+O Open</div>
     </div>
     <div class="container">
         <aside class="sidebar">
@@ -84,9 +85,20 @@
             </div>
         </aside>
         <main class="editor" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
-            <textarea id="markdown-editor" placeholder="Start writing your markdown..."></textarea>
+            <textarea id="markdown-editor" placeholder="
+            🌟 Welcome to TayporaX! 🌟 
+            Unleash your creativity and start crafting your words below. 
+            Your blank canvas awaits—dive in and let your ideas flow! ✨✍️
+            
+            🌟 欢迎来到 TayporaX！🌟 
+            释放你的创造力，从下面开始编织你的文字吧。 
+            你的空白画布在等待—快来投入，尽情发挥你的想法吧！✨✍️
+            
+            🌟 تايپورا ئېكىسگە كەلگىنىڭىزنى قارشى ئالىمىز! 🌟
+            ئىجادچانلىقىڭىزنى ئېچىڭ ھەمدە تەپەككۇرىڭىزنى ئۇرغۇتۇڭ.خاتىرىڭىزنى يېزىشقا باشلاڭ.✨✍️"></textarea>
             <div id="markdown-preview" style="display: none;"></div>
             <input type="file" id="image-upload" accept="image/*" style="display: none;">
+            <input type="file" id="fileInput" style="display: none;" />
             <input type="hidden" id="current-filename"> <!-- Hidden input to hold current filename -->
         </main>        
     </div>

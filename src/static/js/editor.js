@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('submenu-save').textContent = translation.submenuSave;
             document.getElementById('submenu-delete').textContent = translation.submenuDelete;
             document.getElementById('submenu-new').textContent = translation.submenuNew;
+            document.getElementById('submenu-open').textContent = translation.submenuOpen;
 
             document.getElementById('files-title').textContent = translation.filesTitle;
             document.getElementById('search-title').textContent = translation.searchTitle;

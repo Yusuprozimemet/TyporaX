@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
     const fileListElement = document.getElementById('file-list');
     const searchInputElement = document.getElementById('search-input');
@@ -65,7 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(content => {
                 markdownEditorElement.value = content;
                 markdownPreviewElement.style.display = 'none'; // Hide preview when editing
-                currentFilenameElement.value = filename; // Update the current filename
             })
             .catch(error => console.error('Error fetching file content:', error));
     }
@@ -125,8 +125,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     break;
                 case 's': // Save file
-                    event.preventDefault();
-                    handleSaveFile();
+                    if (selectedFile) {
+                        event.preventDefault();
+                        handleSaveFile();
+                    }
                     break;
                 case 'x': // Copy file
                     if (selectedFile) {
@@ -190,8 +192,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(result => {
                     if (result.success) {
                         fetchFileList();
-                        markdownEditorElement.value = ''; // Clear editor after deletion
-                        selectedFile = null; // Clear selection
                     } else {
                         alert('Error deleting file: ' + result.error);
                     }
@@ -200,13 +200,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Handle saving file as .md
     function handleSaveFile() {
-        // Use a timestamp to ensure uniqueness for untitled files
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const defaultFilename = `${timestamp}.md`;
-        const filename = currentFilenameElement.value || defaultFilename;
+        if (!selectedFile) {
+            alert('Please select or create a file before saving.');
+            return;
+        }
 
+        const filename = selectedFile.endsWith('.md') ? selectedFile : `${selectedFile}.md`;
         fetch('/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -216,13 +216,13 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(result => {
                 if (result.success) {
                     alert('File saved successfully.');
-                    fetchFileList(); // Refresh file list
                 } else {
                     alert('Error saving file: ' + result.error);
                 }
             })
             .catch(error => console.error('Error saving file:', error));
     }
+
 
     // Handle copying file
     function handleCopyFile() {
@@ -245,6 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+
     // Handle creating a new file
     function handleCreateNewFile() {
         const filename = prompt('Enter new file name:', 'Untitled.md');
@@ -260,7 +261,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         fetchFileList();
                         selectedFile = filename; // Set the new file as the selected file
                         markdownEditorElement.value = ''; // Clear the editor
-                        currentFilenameElement.value = filename; // Set current filename
                     } else {
                         alert('Error creating new file: ' + result.error);
                     }
@@ -268,6 +268,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 .catch(error => console.error('Error creating new file:', error));
         }
     }
+
+
 
     // Function to handle opening a file
     function handleOpenFile() {
@@ -283,8 +285,9 @@ document.addEventListener("DOMContentLoaded", function () {
             reader.onload = function (e) {
                 // Load the file content into the markdown editor
                 markdownEditorElement.value = e.target.result;
-                selectedFile = file.name; // Update selected file
-                currentFilenameElement.value = file.name; // Update current filename
+
+                // Optionally update the hidden input with the current filename
+                currentFilenameElement.value = file.name;
             };
 
             reader.onerror = function (e) {
