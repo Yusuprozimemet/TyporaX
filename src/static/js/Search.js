@@ -1,5 +1,4 @@
-
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const fileListElement = document.getElementById('file-list');
     const searchInputElement = document.getElementById('search-input');
     const searchResultsElement = document.getElementById('search-results');
@@ -33,8 +32,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (!Array.isArray(files)) {
                     throw new Error('Unexpected response format from /files');
                 }
-                fileListElement.innerHTML = files.length > 0 
-                    ? files.map(file => 
+                fileListElement.innerHTML = files.length > 0
+                    ? files.map(file =>
                         `<div class="file-item" data-filename="${file}">${file}</div>`
                     ).join('')
                     : '<p>No files found.</p>';
@@ -57,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Fetch and display the content of a file
     function fetchFileContent(filename) {
-        fetch(`/open?filename=${encodeURIComponent(filename)}`)
+        return fetch(`/open?filename=${encodeURIComponent(filename)}`)
             .then(response => response.text())
             .then(content => {
                 markdownEditorElement.value = content;
@@ -79,8 +78,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (!Array.isArray(results)) {
                     throw new Error('Unexpected response format from /search');
                 }
-                searchResultsElement.innerHTML = results.length > 0 
-                    ? results.map(result => 
+                searchResultsElement.innerHTML = results.length > 0
+                    ? results.map(result =>
                         `<div class="search-result" data-filename="${result.filename}" data-line="${result.line}">
                             <strong>${result.filename}</strong> (Line ${result.line}): ${result.snippet || 'No snippet available'}
                         </div>`
@@ -99,24 +98,43 @@ document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('.search-result').forEach(result => {
             result.addEventListener('click', () => {
                 const filename = result.getAttribute('data-filename');
-                fetchFileContent(filename);
-                // Optionally scroll to or highlight the specific line in the editor
-                scrollToLine(result.getAttribute('data-line'));
+                const lineNumber = parseInt(result.getAttribute('data-line'), 10);
+                const searchText = result.textContent.split(': ')[1].trim(); // Extract the search text
+
+                fetchFileContent(filename).then(() => {
+                    // Call the new function after the content is loaded
+                    scrollToLineAndHighlight(lineNumber, searchText);
+                });
             });
         });
     }
 
-    // Function to scroll to a specific line in the editor (if desired)
-    function scrollToLine(lineNumber) {
-        // This function assumes that line numbers correspond to new lines
-        // Implement this function if you need to scroll or highlight specific lines
-        // Example:
-        // const lines = markdownEditorElement.value.split('\n');
-        // let position = 0;
-        // for (let i = 0; i < lineNumber - 1; i++) {
-        //     position += lines[i].length + 1; // +1 for newline character
-        // }
-        // markdownEditorElement.scrollTop = position; // Adjust as needed
+    // Function to scroll to a specific line in the editor and highlight the text
+    function scrollToLineAndHighlight(lineNumber, searchText) {
+        console.log(`Scrolling to line: ${lineNumber}, highlighting text: ${searchText}`);
+        const lines = markdownEditorElement.value.split('\n');
+        let position = 0;
+        for (let i = 0; i < lineNumber - 1; i++) {
+            position += lines[i].length + 1; // +1 for newline character
+        }
+
+        // Scroll to the position
+        const lineHeight = markdownEditorElement.scrollHeight / markdownEditorElement.value.split('\n').length;
+        markdownEditorElement.scrollTop = (lineNumber - 1) * lineHeight;
+
+        // Highlight the text
+        const start = position + lines[lineNumber - 1].toLowerCase().indexOf(searchText.toLowerCase());
+        const end = start + searchText.length;
+        console.log(`Highlighting from ${start} to ${end}`);
+        markdownEditorElement.setSelectionRange(start, end);
+        markdownEditorElement.focus();
+
+        // Optionally, you can add a temporary highlight effect
+        const originalColor = markdownEditorElement.style.backgroundColor;
+        markdownEditorElement.style.backgroundColor = '#f5f5f5';
+        setTimeout(() => {
+            markdownEditorElement.style.backgroundColor = originalColor;
+        }, 1000); // Reset after 1.5 seconds
     }
 
     // Initial file list fetch
