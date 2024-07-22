@@ -1,5 +1,7 @@
 # TyporaX: The Magic of Markdown, Upgraded
 
+<img src="Screenshot_2349.png" alt="Image" style="width:70%;">
+
 ## Why TyporaX?
 
 Once upon a time, I was a devoted Typora user. Typora was my go-to for crafting simple lab notes, rich with images and ideas. Its seamless interface made writing a breeze. However, there was always a small wish—a desire for a Grammarly-like feature to polish my English. And thus, TyporaX was born.
