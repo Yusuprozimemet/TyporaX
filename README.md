@@ -1,6 +1,8 @@
 # TyporaX: The Magic of Markdown, Upgraded
 
-<img src="Screenshot_2349.png" alt="Image" style="width:50%;">
+<p align="center">
+    <img src="Screenshot_2349.png" alt="Image" style="width:50%; height:auto;">
+</p>
 
 ## Why TyporaX?
 
